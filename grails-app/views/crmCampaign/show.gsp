@@ -4,6 +4,29 @@
     <meta name="layout" content="main">
     <g:set var="entityName" value="${message(code: 'crmCampaign.label', default: 'Campaign')}"/>
     <title><g:message code="crmCampaign.show.title" args="[entityName, crmCampaign]"/></title>
+    <r:script>
+        $(document).ready(function () {
+            $.getJSON("${createLink(action: 'media', id: crmCampaign.id)}", function(data) {
+                var $container = $("#media-list");
+                if($container) {
+                    for(var i = 0; i < data.length; i++) {
+                        var image = data[i];
+                        $container.append($("<img/>").attr("src", image.uri).attr("alt", image.name));
+                    }
+                    if(data.length > 0) {
+                        $container.show();
+                    }
+                }
+            });
+        });
+    </r:script>
+    <style type="text/css">
+        #media-list img {
+            border: 1px dashed #999;
+            border-radius: 5px;
+            margin-bottom: 2px;
+        }
+    </style>
 </head>
 
 <body>
@@ -12,12 +35,16 @@
     <div class="span9">
 
         <crm:header title="crmCampaign.show.title"
-                    subtitle="${crmCampaign.handlerName ? message(code: crmCampaign.handlerName + '.label', default: crmCampaign.handlerName) : ''}"
+                    subtitle="${crmCampaign.parent ? crmCampaign.parent.toString() : ''}"
                     args="[entityName, crmCampaign]"/>
 
         <div class="tabbable">
             <ul class="nav nav-tabs">
                 <li class="active"><a href="#main" data-toggle="tab"><g:message code="crmCampaign.tab.main.label"/></a>
+                </li>
+                <li><a href="#children" data-toggle="tab"><g:message
+                        code="crmCampaign.tab.children.label"/><crm:countIndicator
+                        count="${crmCampaign.children.size()}"/></a>
                 </li>
                 <crm:pluginViews location="tabs" var="view">
                     <crm:pluginTab id="${view.id}" label="${view.label}" count="${view.model?.totalCount}"/>
@@ -27,49 +54,77 @@
             <div class="tab-content">
                 <div class="tab-pane active" id="main">
                     <div class="row-fluid">
-                        <div class="span7">
-                            <dl>
+                        <div class="span8">
+                            <div class="row-fluid">
+                                <div class="span7">
+                                    <dl>
+                                        <g:if test="${crmCampaign.number}">
+                                            <dt><g:message code="crmCampaign.number.label" default="Number"/></dt>
+                                            <dd><g:fieldValue bean="${crmCampaign}" field="number"/></dd>
+                                        </g:if>
 
-                                <g:if test="${crmCampaign.number}">
-                                    <dt><g:message code="crmCampaign.number.label" default="Number"/></dt>
-                                    <dd><g:fieldValue bean="${crmCampaign}" field="number"/></dd>
-                                </g:if>
+                                        <g:if test="${crmCampaign.code}">
+                                            <dt><g:message code="crmCampaign.code.label" default="Code"/></dt>
+                                            <dd><g:fieldValue bean="${crmCampaign}" field="code"/></dd>
+                                        </g:if>
 
-                                <g:if test="${crmCampaign.code}">
-                                    <dt><g:message code="crmCampaign.code.label" default="Code"/></dt>
-                                    <dd><g:fieldValue bean="${crmCampaign}" field="code"/></dd>
-                                </g:if>
+                                        <g:if test="${crmCampaign.name}">
+                                            <dt><g:message code="crmCampaign.name.label" default="Name"/></dt>
 
-                                <g:if test="${crmCampaign.name}">
-                                    <dt><g:message code="crmCampaign.name.label" default="Name"/></dt>
+                                            <dd><g:fieldValue bean="${crmCampaign}" field="name"/></dd>
+                                        </g:if>
+                                    </dl>
+                                </div>
 
-                                    <dd><g:fieldValue bean="${crmCampaign}" field="name"/></dd>
-                                </g:if>
+                                <div class="span5">
+                                    <dl>
+                                        <g:if test="${crmCampaign.startTime}">
+                                            <dt><g:message code="crmCampaign.startTime.label" default="Starts"/></dt>
+                                            <dd class="nowrap"><g:formatDate date="${crmCampaign.startTime}"
+                                                                             type="datetime"/></dd>
+                                        </g:if>
+                                        <g:if test="${crmCampaign.endTime}">
+                                            <dt><g:message code="crmCampaign.endTime.label" default="Ends"/></dt>
+                                            <dd class="nowrap"><g:formatDate date="${crmCampaign.endTime}"
+                                                                             type="datetime"/></dd>
+                                        </g:if>
 
-                                <g:if test="${crmCampaign.description}">
+                                        <g:if test="${crmCampaign?.status}">
+                                            <dt><g:message code="crmCampaign.status.label" default="Status"/></dt>
+
+                                            <dd><g:fieldValue bean="${crmCampaign}" field="status"/></dd>
+                                        </g:if>
+                                    </dl>
+                                </div>
+
+                            </div>
+
+                            <g:if test="${crmCampaign.description}">
+                                <dl style="margin-top: 0;">
                                     <dt><g:message code="crmCampaign.description.label" default="Description"/></dt>
                                     <dd><g:decorate encode="HTML">${crmCampaign.description}</g:decorate></dd>
-                                </g:if>
-                            </dl>
+                                </dl>
+                            </g:if>
                         </div>
 
-                        <div class="span5">
+                        <div class="span4">
                             <dl>
 
+                                <g:if test="${crmCampaign.parent}">
+                                    <dt><g:message code="crmCampaign.parent.label"/></dt>
+                                    <dd>
+                                        <g:link action="show" id="${crmCampaign.parentId}">
+                                            <g:fieldValue bean="${crmCampaign}" field="parent"/>
+                                        </g:link>
+                                    </dd>
+                                </g:if>
                                 <g:if test="${crmCampaign.handlerName}">
                                     <dt><g:message code="crmCampaign.handler.label" default="Type"/></dt>
                                     <dd>${message(code: crmCampaign.handlerName + '.label', default: crmCampaign.handlerName)}</dd>
                                 </g:if>
 
-                                <g:if test="${crmCampaign?.status}">
-                                    <dt><g:message code="crmCampaign.status.label" default="Status"/></dt>
-
-                                    <dd><g:fieldValue bean="${crmCampaign}" field="status"/></dd>
-                                </g:if>
-
                             </dl>
                         </div>
-
                     </div>
 
                     <div class="form-actions">
@@ -81,13 +136,15 @@
                                         label="crmCampaign.button.edit.label" permission="crmCampaign:edit">
                             </crm:button>
 
-                            <crm:button type="link" controller="${crmCampaign.handlerName}" action="edit"
-                                        id="${crmCampaign.id}"
-                                        visual="primary"
-                                        icon="icon-wrench icon-white"
-                                        label="crmCampaign.button.settings.label"
-                                        title="crmCampaign.button.settings.help"
-                                        permission="crmCampaign:edit"/>
+                            <g:if test="${crmCampaign.handlerName}">
+                                <crm:button type="link" controller="${crmCampaign.handlerName}" action="edit"
+                                            id="${crmCampaign.id}"
+                                            visual="primary"
+                                            icon="icon-wrench icon-white"
+                                            label="crmCampaign.button.settings.label"
+                                            title="crmCampaign.button.settings.help"
+                                            permission="crmCampaign:edit"/>
+                            </g:if>
 
                             <crm:button type="link" action="create"
                                         visual="success"
@@ -98,6 +155,10 @@
                         </g:form>
                     </div>
 
+                </div>
+
+                <div class="tab-pane" id="children">
+                    <tmpl:children bean="${crmCampaign}" list="${crmCampaign.children}"/>
                 </div>
 
                 <crm:pluginViews location="tabs" var="view">
@@ -113,8 +174,13 @@
 
     <div class="span3">
 
+        <div class="alert alert-info">
+            <g:render template="summary" model="${[bean: crmCampaign]}"/>
+        </div>
+
         <g:render template="/tags" plugin="crm-tags" model="${[bean: crmCampaign]}"/>
 
+        <div id="media-list" class="hide"></div>
     </div>
 </div>
 

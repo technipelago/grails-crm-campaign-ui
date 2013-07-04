@@ -19,21 +19,48 @@
 
                 <f:with bean="cmd">
                     <div class="span4">
-                        <f:field property="number" label="crmCampaign.number.label"
-                                 input-class="input-large" input-autofocus=""
-                                 input-placeholder="${message(code: 'crmCampaignQueryCommand.number.placeholder', default: '')}"/>
-                        <f:field property="name" label="crmCampaign.name.label"
-                                 input-class="input-large"
-                                 input-placeholder="${message(code: 'crmCampaignQueryCommand.name.placeholder', default: '')}"/>
+                        <div class="row-fluid">
+                            <f:field property="number" label="crmCampaign.number.label"
+                                     input-class="span12" input-autofocus=""
+                                     input-placeholder="${message(code: 'crmCampaignQueryCommand.number.placeholder', default: '')}"/>
+                            <f:field property="name" label="crmCampaign.name.label"
+                                     input-class="span12"
+                                     input-placeholder="${message(code: 'crmCampaignQueryCommand.name.placeholder', default: '')}"/>
+                        </div>
                     </div>
 
                     <div class="span4">
+                        <div class="row-fluid">
+                            <f:field property="fromDate">
+                                <div class="input-append date"
+                                     data-date="${formatDate(format: 'yyyy-MM-dd', date: cmd.fromDate ?: new Date())}">
+                                    <g:textField name="fromDate" class="span12" placeholder="ÅÅÅÅ-MM-DD"
+                                                 value="${formatDate(format: 'yyyy-MM-dd', date: cmd.fromDate)}"/><span
+                                        class="add-on"><i
+                                            class="icon-th"></i></span>
+                                </div>
+                            </f:field>
+                            <f:field property="toDate">
+                                <div class="input-append date"
+                                     data-date="${formatDate(format: 'yyyy-MM-dd', date: cmd.toDate ?: new Date())}">
+                                    <g:textField name="toDate" class="span12" placeholder="ÅÅÅÅ-MM-DD"
+                                                 value="${formatDate(format: 'yyyy-MM-dd', date: cmd.toDate)}"/><span
+                                        class="add-on"><i
+                                            class="icon-th"></i></span>
+                                </div>
+                            </f:field>
+                        </div>
                         <f:field property="status" label="crmCampaign.status.label"
-                                 input-class="input-large"
+                                 input-class="span11"
                                  input-placeholder="${message(code: 'crmCampaignQueryCommand.status.placeholder', default: '')}"/>
                     </div>
 
                     <div class="span4">
+                        <div class="row-fluid">
+                            <f:field property="parent" label="crmCampaign.parent.label"
+                                     input-class="span11"
+                                     input-placeholder="${message(code: 'crmCampaignQueryCommand.parent.placeholder', default: '')}"/>
+                        </div>
                     </div>
 
                 </f:with>

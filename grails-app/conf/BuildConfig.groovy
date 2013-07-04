@@ -28,13 +28,14 @@ grails.project.dependency.resolution = {
             export = false
         }
         test(":spock:0.7") { export = false }
-        test(":codenarc:0.17") { export = false }
+        test(":codenarc:0.18.1") { export = false }
 
         compile "grails.crm:crm-core:latest.integration"
         runtime "grails.crm:crm-security:latest.integration"
         runtime "grails.crm:crm-ui-bootstrap:latest.integration"
         runtime "grails.crm:crm-tags:latest.integration"
         runtime "grails.crm:crm-campaign:latest.integration"
+        runtime "grails.crm:crm-content:latest.integration"
 
         compile ":selection:latest.integration"
         runtime ":selection-repository:latest.integration"
