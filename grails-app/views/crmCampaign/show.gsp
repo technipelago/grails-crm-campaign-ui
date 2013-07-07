@@ -6,9 +6,9 @@
     <title><g:message code="crmCampaign.show.title" args="[entityName, crmCampaign]"/></title>
     <r:script>
         $(document).ready(function () {
-            $.getJSON("${createLink(action: 'media', id: crmCampaign.id)}", function(data) {
-                var $container = $("#media-list");
-                if($container) {
+            var $container = $("#image-list");
+            if($container) {
+                $.getJSON("${createLink(controller: 'crmCampaignResource', action: 'images', params: [id: crmCampaign.id, cache: false])}", function(data) {
                     for(var i = 0; i < data.length; i++) {
                         var image = data[i];
                         $container.append($("<img/>").attr("src", image.uri).attr("alt", image.name));
@@ -16,15 +16,15 @@
                     if(data.length > 0) {
                         $container.show();
                     }
-                }
-            });
+                });
+            }
         });
     </r:script>
     <style type="text/css">
-        #media-list img {
+        #image-list img {
             border: 1px dashed #999;
             border-radius: 5px;
-            margin-bottom: 2px;
+            margin-bottom: 5px;
         }
     </style>
 </head>
@@ -180,7 +180,7 @@
 
         <g:render template="/tags" plugin="crm-tags" model="${[bean: crmCampaign]}"/>
 
-        <div id="media-list" class="hide"></div>
+        <div id="image-list" class="hide"></div>
     </div>
 </div>
 
