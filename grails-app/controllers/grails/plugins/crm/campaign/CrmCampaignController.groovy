@@ -1,13 +1,10 @@
 package grails.plugins.crm.campaign
 
-import grails.converters.JSON
 import grails.plugins.crm.core.DateUtils
 import grails.plugins.crm.core.TenantUtils
 import grails.plugins.crm.core.WebUtils
 import grails.util.GrailsNameUtils
 import org.springframework.dao.DataIntegrityViolationException
-
-import javax.servlet.http.HttpServletResponse
 
 class CrmCampaignController {
 
@@ -15,8 +12,6 @@ class CrmCampaignController {
 
     def crmSecurityService
     def selectionService
-    def crmCampaignService
-    def crmContentService
 
     def index() {
         // If any query parameters are specified in the URL, let them override the last query stored in session.
@@ -187,33 +182,4 @@ class CrmCampaignController {
         }
     }
 
-    def media(Long id) {
-        def tenant = TenantUtils.tenant
-        def crmCampaign = CrmCampaign.findByIdAndTenantId(id, tenant)
-        if (!crmCampaign) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND)
-            return
-        }
-        def mediaList = []
-        collectImages(crmCampaign, mediaList)
-        render mediaList as JSON
-    }
-
-    private void collectImages(CrmCampaign crmCampaign, List images) {
-        def result = crmContentService.findResourcesByReference(crmCampaign).findAll { isImage(it.name) && (it.isPublished() || it.isShared()) }
-        if (result) {
-            images.addAll(result.collect {
-                def md = it.metadata
-                [id: it.id, name: it.name, contentType: md.contentType, length: md.bytes, uri: crm.createResourceLink(resource: it)]
-            })
-        }
-        for (child in crmCampaign.children) {
-            collectImages(child, images)
-        }
-    }
-
-    private boolean isImage(final String name) {
-        final String lowercaseName = name.toLowerCase()
-        lowercaseName.endsWith('.png') || lowercaseName.endsWith('.jpg') || lowercaseName.endsWith('.gif')
-    }
 }
