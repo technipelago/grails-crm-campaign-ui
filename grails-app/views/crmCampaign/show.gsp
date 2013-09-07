@@ -21,11 +21,11 @@
         });
     </r:script>
     <style type="text/css">
-        #image-list img {
-            border: 1px dashed #999;
-            border-radius: 5px;
-            margin-bottom: 5px;
-        }
+    #image-list img {
+        border: 1px dashed #999;
+        border-radius: 5px;
+        margin-bottom: 5px;
+    }
     </style>
 </head>
 
@@ -45,6 +45,10 @@
                 <li><a href="#children" data-toggle="tab"><g:message
                         code="crmCampaign.tab.children.label"/><crm:countIndicator
                         count="${crmCampaign.children.size()}"/></a>
+                </li>
+                <li><a href="#target" data-toggle="tab"><g:message
+                        code="crmCampaign.tab.target.label"/><crm:countIndicator
+                        count="${recipientsCount}"/></a>
                 </li>
                 <crm:pluginViews location="tabs" var="view">
                     <crm:pluginTab id="${view.id}" label="${view.label}" count="${view.model?.totalCount}"/>
@@ -113,13 +117,13 @@
                                 <g:if test="${crmCampaign.parent}">
                                     <dt><g:message code="crmCampaign.parent.label"/></dt>
                                     <dd>
-                                        <g:link action="show" id="${crmCampaign.parentId}">
+                                        <g:link action="show" id="${crmCampaign.parentId}" fragment="children">
                                             <g:fieldValue bean="${crmCampaign}" field="parent"/>
                                         </g:link>
                                     </dd>
                                 </g:if>
                                 <g:if test="${crmCampaign.handlerName}">
-                                    <dt><g:message code="crmCampaign.handler.label" default="Type"/></dt>
+                                    <dt><g:message code="crmCampaign.handlerName.label" default="Type"/></dt>
                                     <dd>${message(code: crmCampaign.handlerName + '.label', default: crmCampaign.handlerName)}</dd>
                                 </g:if>
 
@@ -127,38 +131,44 @@
                         </div>
                     </div>
 
-                    <div class="form-actions">
-                        <g:form>
-                            <g:hiddenField name="id" value="${crmCampaign?.id}"/>
+                    <div class="form-actions btn-toolbar">
+                        <crm:selectionMenu location="crmCampaign" visual="primary">
+                            <crm:button type="link" controller="crmCampaign" action="index"
+                                        visual="primary" icon="icon-search icon-white"
+                                        label="crmCampaign.button.find.label" permission="crmCampaign:show"/>
+                        </crm:selectionMenu>
 
-                            <crm:button type="link" action="edit" id="${crmCampaign?.id}" visual="primary"
-                                        icon="icon-pencil icon-white"
-                                        label="crmCampaign.button.edit.label" permission="crmCampaign:edit">
-                            </crm:button>
+                        <crm:button type="link" action="edit" id="${crmCampaign?.id}" visual="warning"
+                                    icon="icon-pencil icon-white"
+                                    label="crmCampaign.button.edit.label" permission="crmCampaign:edit">
+                        </crm:button>
 
-                            <g:if test="${crmCampaign.handlerName}">
-                                <crm:button type="link" controller="${crmCampaign.handlerName}" action="edit"
-                                            id="${crmCampaign.id}"
-                                            visual="primary"
-                                            icon="icon-wrench icon-white"
-                                            label="crmCampaign.button.settings.label"
-                                            title="crmCampaign.button.settings.help"
-                                            permission="crmCampaign:edit"/>
-                            </g:if>
+                        <g:if test="${crmCampaign.handlerName}">
+                            <crm:button type="link" controller="${crmCampaign.handlerName}" action="edit"
+                                        id="${crmCampaign.id}"
+                                        visual="warning"
+                                        icon="icon-wrench icon-white"
+                                        label="crmCampaign.button.settings.label"
+                                        title="crmCampaign.button.settings.help"
+                                        permission="crmCampaign:edit"/>
+                        </g:if>
 
-                            <crm:button type="link" action="create"
-                                        visual="success"
-                                        icon="icon-file icon-white"
-                                        label="crmCampaign.button.create.label"
-                                        title="crmCampaign.button.create.help"
-                                        permission="crmCampaign:create"/>
-                        </g:form>
+                        <crm:button type="link" action="create"
+                                    visual="success"
+                                    icon="icon-file icon-white"
+                                    label="crmCampaign.button.create.label"
+                                    title="crmCampaign.button.create.help"
+                                    permission="crmCampaign:create"/>
                     </div>
 
                 </div>
 
                 <div class="tab-pane" id="children">
                     <tmpl:children bean="${crmCampaign}" list="${crmCampaign.children}"/>
+                </div>
+
+                <div class="tab-pane" id="target">
+                    <tmpl:target bean="${crmCampaign}" list="${crmCampaign.target}"/>
                 </div>
 
                 <crm:pluginViews location="tabs" var="view">

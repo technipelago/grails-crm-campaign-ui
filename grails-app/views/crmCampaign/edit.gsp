@@ -52,19 +52,16 @@
 
             <div class="span4">
                 <div class="row-fluid">
-                    <g:if test="${crmCampaign.handlerName}">
-                        <div class="control-group">
-                            <label class="control-label"><g:message code="crmCampaign.handlerName.label"
-                                                                    default="Type"/></label>
-
-                            <div class="controls">
-                                <h2>${message(code: crmCampaign.handlerName + '.label', default: crmCampaign.handlerName)}</h2>
-                            </div>
-                        </div>
-                    </g:if>
+                    <g:unless test="${crmCampaign.handlerName}">
+                        <f:field property="handlerName">
+                            <g:select name="handlerName" from="${campaignTypes}" class="span10"
+                                      optionValue="${{ message(code: it + '.label', default: it) }}"
+                                      noSelection="['': '']"/>
+                        </f:field>
+                    </g:unless>
                     <f:field property="name" input-class="span11" input-autofocus=""/>
                     <f:field property="description">
-                        <g:textArea name="description" value="${crmCampaign.description}" rows="5" cols="50"
+                        <g:textArea name="description" value="${crmCampaign.description}" rows="6" cols="50"
                                     class="span11"/>
                     </f:field>
                 </div>
@@ -83,11 +80,11 @@
                                              value="${formatDate(format: 'yyyy-MM-dd', date: crmCampaign.startTime)}"/><span
                                     class="add-on"><i class="icon-th"></i></span>
                             </span>
-<%--
-                            <g:select name="startTime" from="${timeList}"
-                                      value="${formatDate(format: 'HH:mm', date: crmCampaign.startTime)}"
-                                      class="span4"/>
---%>
+                            <%--
+                                                        <g:select name="startTime" from="${timeList}"
+                                                                  value="${formatDate(format: 'HH:mm', date: crmCampaign.startTime)}"
+                                                                  class="span4"/>
+                            --%>
                         </div>
                     </div>
 
@@ -101,11 +98,11 @@
                                              value="${formatDate(format: 'yyyy-MM-dd', date: crmCampaign.endTime)}"/><span
                                     class="add-on"><i class="icon-th"></i></span>
                             </span>
-<%--
-                            <g:select name="endTime" from="${timeList}"
-                                      value="${formatDate(format: 'HH:mm', date: crmCampaign.endTime)}"
-                                      class="span4"/>
---%>
+                            <%--
+                                                        <g:select name="endTime" from="${timeList}"
+                                                                  value="${formatDate(format: 'HH:mm', date: crmCampaign.endTime)}"
+                                                                  class="span4"/>
+                            --%>
                         </div>
                     </div>
                     <f:field property="status">
@@ -121,7 +118,13 @@
                     <f:field property="code" input-class="input-small"/>
 
                     <f:field property="parent">
-                        <g:select name="parent.id" from="${parentList}" optionKey="id" value="${crmCampaign.parentId}"/>
+                        <g:select name="parent.id" from="${parentList}" optionKey="id" value="${crmCampaign.parentId}"
+                                  noSelection="${['null': '']}"/>
+                    </f:field>
+
+                    <f:field property="username">
+                        <g:select name="username" from="${userList}" optionKey="username" optionValue="name"
+                                  value="${crmCampaign.username}" class="span11"/>
                     </f:field>
                 </div>
             </div>
@@ -129,7 +132,12 @@
         </div>
 
         <div class="form-actions">
-            <crm:button action="edit" visual="primary" icon="icon-ok icon-white" label="crmCampaign.button.save.label"/>
+            <crm:button action="edit" visual="warning" icon="icon-ok icon-white" label="crmCampaign.button.save.label"/>
+            <crm:button action="delete" visual="danger" icon="icon-trash icon-white"
+                        label="crmCampaign.button.delete.label"
+                        confirm="crmCampaign.button.delete.confirm.message"
+                        permission="crmCampaign:delete"/>
+            <crm:button type="link" action="show" id="${crmCampaign.id}" icon="icon-remove" label="crmCampaign.button.back.label"/>
         </div>
 
     </f:with>

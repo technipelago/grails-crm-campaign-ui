@@ -1,7 +1,5 @@
 package grails.plugins.crm.campaign
 
-import groovy.json.JsonSlurper
-
 class ProductDiscountCampaignController {
 
     def productDiscountCampaign
@@ -16,17 +14,10 @@ class ProductDiscountCampaignController {
 
         switch (request.method) {
             case "GET":
-                def cfg = crmCampaign.handlerConfig ? new JsonSlurper().parseText(crmCampaign.handlerConfig) : [:]
+                def cfg = crmCampaign.configuration
                 return [crmCampaign: crmCampaign, cfg: cfg]
             case "POST":
-                productDiscountCampaign.configure(crmCampaign) {
-                    productGroups = params.productGroups.split(',').toList()
-                    products = params.products.split(',').toList()
-                    discountProduct = params.discountProduct
-                    discount = params.double('discount')
-                    condition = params.condition
-                    threshold = params.double('threshold')
-                }
+                productDiscountCampaign.configure(crmCampaign, params)
                 crmCampaign.save()
                 flash.success = "Inställningarna uppdaterade"
                 redirect controller: "crmCampaign", action: "show", id: id

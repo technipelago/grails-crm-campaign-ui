@@ -57,6 +57,11 @@
 
                     <div class="span4">
                         <div class="row-fluid">
+                            <f:field property="handlerName" label="crmCampaign.handlerName.label">
+                                <g:select name="handlerName" from="${campaignTypes}" class="span11"
+                                          noSelection="['': '']"
+                                          optionValue="${{ message(code: it + '.label', default: it) }}"/>
+                            </f:field>
                             <f:field property="parent" label="crmCampaign.parent.label"
                                      input-class="span11"
                                      input-placeholder="${message(code: 'crmCampaignQueryCommand.parent.placeholder', default: '')}"/>
@@ -70,16 +75,28 @@
             <div class="form-actions btn-toolbar">
                 <crm:selectionMenu visual="primary">
                     <crm:button action="list" icon="icon-search icon-white" visual="primary"
-                                label="crmCampaign.button.find.label"/>
+                                label="crmCampaign.button.search.label"/>
                 </crm:selectionMenu>
                 <crm:button type="link" group="true" action="create" visual="success" icon="icon-file icon-white"
-                            label="crmCampaign.button.create.label" permission="crmCampaign:create"/>
+                            label="crmCampaign.button.create.label" title="crmCampaign.button.create.help"
+                            permission="crmCampaign:create"/>
+
+                <g:link action="clearQuery" class="btn btn-link"><g:message code="crmCampaign.button.query.clear.label"
+                                                                            default="Reset fields"/></g:link>
             </div>
 
         </g:form>
     </div>
 
     <div class="span3">
+        <g:if test="${activeCampaigns}">
+            <ul class="nav nav-list">
+                <li class="nav-header">Aktiva kampanjer</li>
+                <g:each in="${activeCampaigns}" var="c">
+                    <li><g:link action="show" id="${c.id}">${c.encodeAsHTML()}</g:link></li>
+                </g:each>
+            </ul>
+        </g:if>
     </div>
 </div>
 

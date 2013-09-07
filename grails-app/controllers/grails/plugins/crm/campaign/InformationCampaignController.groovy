@@ -16,8 +16,6 @@
 
 package grails.plugins.crm.campaign
 
-//import groovy.json.JsonSlurper
-
 class InformationCampaignController {
 
     def informationCampaign
@@ -32,11 +30,10 @@ class InformationCampaignController {
 
         switch (request.method) {
             case "GET":
-                def cfg = null//crmCampaign.handlerConfig ? new JsonSlurper().parseText(crmCampaign.handlerConfig) : [:]
+                def cfg = crmCampaign.configuration
                 return [crmCampaign: crmCampaign, cfg: cfg]
             case "POST":
-                informationCampaign.configure(crmCampaign) {
-                }
+                informationCampaign.configure(crmCampaign, params)
                 crmCampaign.save()
                 flash.success = "Inställningarna uppdaterade"
                 redirect controller: "crmCampaign", action: "show", id: id

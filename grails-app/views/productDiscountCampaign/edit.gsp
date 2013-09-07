@@ -86,7 +86,7 @@
     </div>
 
     <div class="form-actions">
-        <crm:button visual="primary" icon="icon-ok icon-white" label="crmCampaign.button.save.label"/>
+        <crm:button visual="warning" icon="icon-ok icon-white" label="crmCampaign.button.save.label"/>
         <crm:button type="link" controller="crmCampaign" action="show" id="${crmCampaign.id}" icon="icon-remove"
                     label="crmCampaign.button.cancel.label"/>
     </div>

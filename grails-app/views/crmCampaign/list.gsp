@@ -23,6 +23,7 @@
                             title="${message(code: 'crmCampaign.name.label', default: 'Name')}"/>
 
         <th><g:message code="crmCampaign.parent.label" default="Parent"/></th>
+        <th><g:message code="crmCampaign.handlerName.label" default="Type"/></th>
         <th><g:message code="crmCampaign.startTime.label" default="Starts"/></th>
         <th><g:message code="crmCampaign.endTime.label" default="Ends"/></th>
         <crm:sortableColumn property="status"
@@ -54,6 +55,12 @@
             </td>
 
             <td>
+                <g:if test="${crmCampaign.handlerName}">
+                    ${message(code: crmCampaign.handlerName + '.label', default: crmCampaign.handlerName)}
+                </g:if>
+            </td>
+
+            <td>
                 <g:formatDate type="date" date="${crmCampaign.startTime}"/>
             </td>
 
@@ -75,7 +82,8 @@
     <crm:selectionMenu visual="primary"/>
     <div class="btn-group">
         <crm:button type="link" action="create" visual="success" icon="icon-file icon-white"
-                    label="crmCampaign.button.create.label" permission="crmCampaign:create"/>
+                    label="crmCampaign.button.create.label" title="crmCampaign.button.create.help"
+                    permission="crmCampaign:create"/>
     </div>
 </div>
 
