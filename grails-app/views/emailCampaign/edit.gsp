@@ -28,9 +28,9 @@
                 basicEntities: false,
                 protectedSource: [/\[@link\s+[\s\S]*?\[\/@link\]/g, /\[#[\s\S]*?\]/g],
                 baseHref: "${createLink(controller: 'static')}",
-                filebrowserBrowseUrl: "${createLink(controller: 'crmContent', action: 'browse', params: [reference: 'crmResourceRef@' + bodyHtml.id])}",
+                filebrowserBrowseUrl: "${createLink(controller: 'crmContent', action: 'browse', params: [reference: 'crmCampaign@' + crmCampaign.id])}",
                 filebrowserUploadUrl: "${createLink(controller: 'crmContent', action: 'upload')}",
-                filebrowserImageBrowseUrl: "${createLink(controller: 'crmContent', action: 'browse', params: [reference: 'crmResourceRef@' + bodyHtml.id])}",
+                filebrowserImageBrowseUrl: "${createLink(controller: 'crmContent', action: 'browse', params: [reference: 'crmCampaign@' + crmCampaign.id])}",
                 filebrowserImageUploadUrl: "${createLink(controller: 'crmContent', action: 'upload')}"
             });
         });
@@ -91,7 +91,7 @@
                 <label class="control-label">Externt innehåll</label>
 
                 <div class="controls">
-                    <g:textField name="remoteContent" value="${cfg.remote}" class="span11"/>
+                    <g:textField name="external" value="${cfg.external}" class="span11"/>
                 </div>
             </div>
         </div>
@@ -114,7 +114,7 @@
             <div class="tab-pane active" id="html">
 
                 <div class="row-fluid">
-                    <g:textArea id="text-html" name="html" cols="70" rows="18" class="span11" value="${bodyHtml?.text}"/>
+                    <g:textArea id="text-html" name="html" cols="70" rows="18" class="span11" value="${cfg.html}"/>
                 </div>
 
             </div>
@@ -122,7 +122,7 @@
             <div class="tab-pane" id="text">
 
                 <div class="row-fluid">
-                    <g:textArea id="text-plain" name="text" cols="70" rows="20" class="span11" value="${bodyText?.text}"/>
+                    <g:textArea id="text-plain" name="text" cols="70" rows="20" class="span11" value="${cfg.text}"/>
                 </div>
 
             </div>
