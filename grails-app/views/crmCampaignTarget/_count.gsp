@@ -1,0 +1,1 @@
+<p>Målgruppen innehåller <strong>${totalCount}</strong> poster</p>
