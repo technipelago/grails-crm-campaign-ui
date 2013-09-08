@@ -232,11 +232,15 @@ class CrmCampaignController {
             return
         }
         if (request.post) {
-            crmEmailCampaignService.createRecipients(crmCampaign, [email])
+            if (email) {
+                crmEmailCampaignService.createRecipients(crmCampaign, [email])
+            } else {
+                flash.error = message(code: 'crmCampaignRecipient.email.blank.message', args: [message(code: 'crmCampaignRecipient.email.label', default: 'Campaign'), message(code: 'crmCampaignRecipient.label', default: 'Recipient')])
+            }
             redirect action: "recipients", id: id
         } else {
             if (!params.max) {
-                params.max = 20
+                params.max = 10
             }
             def recipients = CrmCampaignRecipient.createCriteria().list(params) {
                 eq('campaign', crmCampaign)

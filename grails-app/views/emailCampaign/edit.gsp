@@ -134,6 +134,10 @@
         <crm:button visual="warning" icon="icon-ok icon-white" label="crmCampaign.button.save.label"/>
         <crm:button type="link" controller="crmCampaign" action="show" id="${crmCampaign.id}" icon="icon-remove"
                     label="crmCampaign.button.cancel.label"/>
+        <span style="margin-left: 20px;">
+            Webbversion
+            <a href="${url}" title="Klicka här för att läsa en webbversion" target="_blank">${url}</a>
+        </span>
     </div>
 
 </g:form>

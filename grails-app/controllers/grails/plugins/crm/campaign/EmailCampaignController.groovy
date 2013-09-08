@@ -5,6 +5,7 @@ package grails.plugins.crm.campaign
  */
 class EmailCampaignController {
 
+    def grailsApplication
     def emailCampaign
 
     def edit(Long id) {
@@ -15,18 +16,18 @@ class EmailCampaignController {
             return
         }
 
-        def cfg = crmCampaign.configuration
-
         if (request.post) {
             emailCampaign.configure(crmCampaign, params)
             if (crmCampaign.save()) {
                 flash.success = "Inställningarna uppdaterade"
                 redirect controller: "crmCampaign", action: "show", id: id
             } else {
-                render view: "edit", model: [crmCampaign: crmCampaign, cfg: cfg]
+                def url = grailsApplication.config.crm.web.url + '/newsletter/' + crmCampaign.publicId + '.htm'
+                render view: "edit", model: [crmCampaign: crmCampaign, cfg: crmCampaign.configuration, url: url]
             }
         } else {
-            return [crmCampaign: crmCampaign, cfg: cfg]
+            def url = grailsApplication.config.crm.web.url + '/newsletter/' + crmCampaign.publicId + '.htm'
+            return [crmCampaign: crmCampaign, cfg: crmCampaign.configuration, url: url]
         }
     }
 }
