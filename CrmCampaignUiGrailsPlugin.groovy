@@ -1,18 +1,12 @@
 class CrmCampaignUiGrailsPlugin {
-    // Dependency group
     def groupId = "grails.crm"
-    // the plugin version
-    def version = "1.2.0-SNAPSHOT"
-    // the version or versions of Grails the plugin is designed for
+    def version = "1.2.0"
     def grailsVersion = "2.2 > *"
-    // the other plugins this plugin depends on
     def dependsOn = [:]
     def loadAfter = ['crmCampaign']
-    // resources that are excluded from plugin packaging
     def pluginExcludes = [
             "grails-app/views/error.gsp"
     ]
-
     def title = "Crm Campaign UI Plugin" // Headline display name of the plugin
     def author = "Göran Ehrsson"
     def authorEmail = "goran@technipelago.se"
