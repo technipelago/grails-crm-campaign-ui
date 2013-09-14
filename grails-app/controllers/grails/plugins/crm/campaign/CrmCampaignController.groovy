@@ -242,10 +242,17 @@ class CrmCampaignController {
             if (!params.max) {
                 params.max = 10
             }
+            if (!params.sort) {
+                params.sort = 'dateSent'
+            }
             def recipients = CrmCampaignRecipient.createCriteria().list(params) {
                 eq('campaign', crmCampaign)
             }
-            [crmCampaign: crmCampaign, recipients: recipients, totalCount: recipients.totalCount]
+            def hitCount = CrmCampaignRecipient.createCriteria().count() {
+                eq('campaign', crmCampaign)
+                isNotNull('dateOpened')
+            }
+            [crmCampaign: crmCampaign, recipients: recipients, totalCount: recipients.totalCount, hitCount: hitCount]
         }
     }
 
@@ -263,7 +270,9 @@ class CrmCampaignController {
             return
         }
         def tombstone = crmCampaignRecipient.toString()
-        crmCampaignRecipient.delete(flush: true)
+        CrmCampaignRecipient.withTransaction {
+            crmCampaignRecipient.delete()
+        }
         flash.warning = message(code: 'crmCampaignRecipient.deleted.message', args: [message(code: 'crmCampaignRecipient.label', default: 'Recipient'), tombstone])
         redirect action: "recipients", id: crmCampaign.id
     }

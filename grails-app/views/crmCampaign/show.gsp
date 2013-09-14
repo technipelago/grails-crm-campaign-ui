@@ -4,6 +4,7 @@
     <meta name="layout" content="main">
     <g:set var="entityName" value="${message(code: 'crmCampaign.label', default: 'Campaign')}"/>
     <title><g:message code="crmCampaign.show.title" args="[entityName, crmCampaign]"/></title>
+    <%--
     <r:script>
         $(document).ready(function () {
             var $container = $("#image-list");
@@ -20,6 +21,7 @@
             }
         });
     </r:script>
+    --%>
     <style type="text/css">
     #image-list img {
         border: 1px dashed #999;
@@ -34,9 +36,20 @@
 <div class="row-fluid">
     <div class="span9">
 
-        <crm:header title="crmCampaign.show.title"
-                    subtitle="${crmCampaign.parent ? crmCampaign.parent.toString() : ''}"
-                    args="[entityName, crmCampaign]"/>
+        <header class="page-header">
+            <h1>
+                <g:message code="crmCampaign.show.title" args="[entityName, crmCampaign]"/>
+                <g:if test="${crmCampaign.parent}">
+                    <small><g:fieldValue bean="${crmCampaign}" field="parent"/></small>
+                </g:if>
+
+                <g:if test="${crmCampaign.active}">
+                    <span class="label label-important"><g:message code="crmCampaign.active.label"
+                                                                   default="Active"/></span>
+                </g:if>
+            </h1>
+
+        </header>
 
         <div class="tabbable">
             <ul class="nav nav-tabs">
@@ -184,7 +197,7 @@
 
     <div class="span3">
 
-        <div class="alert alert-info">
+        <div class="alert alert-${crmCampaign.active ? 'error' : 'info'}">
             <g:render template="summary" model="${[bean: crmCampaign]}"/>
         </div>
 

@@ -28,9 +28,9 @@
                 basicEntities: false,
                 protectedSource: [/\[@link\s+[\s\S]*?\[\/@link\]/g, /\[#[\s\S]*?\]/g],
                 baseHref: "${createLink(controller: 'static')}",
-                filebrowserBrowseUrl: "${createLink(controller: 'crmContent', action: 'browse', params: [reference: 'crmCampaign@' + crmCampaign.id])}",
+                filebrowserBrowseUrl: "${createLink(controller: 'crmContent', action: 'browse', params: [reference: 'crmCampaign@' + crmCampaign.id, status: 'shared'])}",
                 filebrowserUploadUrl: "${createLink(controller: 'crmContent', action: 'upload')}",
-                filebrowserImageBrowseUrl: "${createLink(controller: 'crmContent', action: 'browse', params: [reference: 'crmCampaign@' + crmCampaign.id])}",
+                filebrowserImageBrowseUrl: "${createLink(controller: 'crmContent', action: 'browse', params: [reference: 'crmCampaign@' + crmCampaign.id, status: 'shared'])}",
                 filebrowserImageUploadUrl: "${createLink(controller: 'crmContent', action: 'upload')}"
             });
         });
@@ -63,7 +63,7 @@
                 <label class="control-label">Rubrik</label>
 
                 <div class="controls">
-                    <g:textField name="subject" value="${cfg.subject}" class="span11"/>
+                    <g:textField name="subject" value="${cfg.subject ?: crmCampaign.name}" class="span11"/>
                 </div>
             </div>
 
@@ -83,7 +83,7 @@
                 <label class="control-label">Huvudmall</label>
 
                 <div class="controls">
-                    <g:textField name="template" value="${cfg.template}" class="span11"/>
+                    <g:textField name="template" value="${cfg.template}" maxlength="255" class="span11"/>
                 </div>
             </div>
 
@@ -91,7 +91,7 @@
                 <label class="control-label">Externt innehåll</label>
 
                 <div class="controls">
-                    <g:textField name="external" value="${cfg.external}" class="span11"/>
+                    <g:textField name="external" value="${cfg.external}" maxlength="255" class="span11"/>
                 </div>
             </div>
         </div>
@@ -134,10 +134,10 @@
         <crm:button visual="warning" icon="icon-ok icon-white" label="crmCampaign.button.save.label"/>
         <crm:button type="link" controller="crmCampaign" action="show" id="${crmCampaign.id}" icon="icon-remove"
                     label="crmCampaign.button.cancel.label"/>
-        <span style="margin-left: 20px;">
-            Webbversion
-            <a href="${url}" title="Klicka här för att läsa en webbversion" target="_blank">${url}</a>
-        </span>
+        <a href="${url}" class="btn btn-info" title="Klicka här för att visa en webbversion" target="preview">
+        <i class="icon-eye-open icon-white"></i>
+        <g:message code="emailCampaign.button.preview.label" default="Preview"/>
+    </a>
     </div>
 
 </g:form>

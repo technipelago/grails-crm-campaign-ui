@@ -29,14 +29,29 @@
             subtitle="${crmCampaign}"
             args="[entityName, crmCampaign]"/>
 
+<h2><g:message code="crmCampaign.recipients.count.label" args="${[totalCount]}"/>
+    <small><g:message code="crmCampaign.recipients.hits.label" args="${[hitCount]}"/></small>
+</h2>
+
 <div class="row-fluid">
     <table class="table table-striped">
         <thead>
         <tr>
-            <th>E-post</th>
-            <th>Skickat</th>
-            <th>Öppnat</th>
-            <th>Problem</th>
+            <g:sortableColumn property="email" params="${[id: params.id]}" titleKey="crmCampaignRecipient.email.label">
+                <g:message code="crmCampaignRecipient.email.label"/>
+            </g:sortableColumn>
+            <g:sortableColumn property="dateSent" params="${[id: params.id]}"
+                              titleKey="crmCampaignRecipient.dateSent.label">
+                <g:message code="crmCampaignRecipient.dateSent.label"/>
+            </g:sortableColumn>
+            <g:sortableColumn property="dateOpened" params="${[id: params.id]}"
+                              titleKey="crmCampaignRecipient.dateOpened.label">
+                <g:message code="crmCampaignRecipient.dateOpened.label"/>
+            </g:sortableColumn>
+            <g:sortableColumn property="reason" params="${[id: params.id]}"
+                              titleKey="crmCampaignRecipient.reason.label">
+                <g:message code="crmCampaignRecipient.reason.label"/>
+            </g:sortableColumn>
             <th></th>
         </tr>
         </thead>
@@ -65,7 +80,7 @@
         </tbody>
     </table>
 
-    <crm:paginate total="${totalCount}"/>
+    <crm:paginate total="${totalCount}" params="${[id: params.id]}"/>
 </div>
 
 <div class="form-actions">

@@ -10,7 +10,6 @@ class CrmCampaignTargetController {
 
     static allowedMethods = [add: 'POST', delete: 'POST']
 
-    def crmCampaignService
     def crmCampaignTargetService
     def crmEmailCampaignService
     def selectionRepositoryService
