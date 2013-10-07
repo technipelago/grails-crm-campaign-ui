@@ -140,6 +140,8 @@
                                     <dd>${message(code: crmCampaign.handlerName + '.label', default: crmCampaign.handlerName)}</dd>
                                 </g:if>
 
+                                <dt><g:message code="crmCampaign.publicId.label" default="ID"/></dt>
+                                <dd><g:fieldValue bean="${crmCampaign}" field="publicId"/></dd>
                             </dl>
                         </div>
                     </div>
