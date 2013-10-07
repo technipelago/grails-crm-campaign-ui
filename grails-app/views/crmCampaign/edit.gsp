@@ -4,7 +4,7 @@
     <meta name="layout" content="main">
     <g:set var="entityName" value="${message(code: 'crmCampaign.label', default: 'Campaign')}"/>
     <title><g:message code="crmCampaign.edit.title" args="[entityName, crmCampaign]"/></title>
-    <r:require modules="datepicker,autocomplete,aligndates"/>
+    <r:require modules="datepicker,aligndates"/>
     <r:script>
         $(document).ready(function () {
 
