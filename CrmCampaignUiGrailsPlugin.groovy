@@ -1,6 +1,6 @@
 class CrmCampaignUiGrailsPlugin {
     def groupId = "grails.crm"
-    def version = "1.2.0"
+    def version = "1.2.1"
     def grailsVersion = "2.2 > *"
     def dependsOn = [:]
     def loadAfter = ['crmCampaign']
@@ -13,7 +13,7 @@ class CrmCampaignUiGrailsPlugin {
     def description = '''\
 Grails CRM Campaign Management User Interface
 '''
-    def documentation = "http://grails.org/plugin/crm-campaign-ui"
+    def documentation = "https://github.com/technipelago/grails-crm-campaign-ui"
     def license = "APACHE"
     def organization = [name: "Technipelago AB", url: "http://www.technipelago.se/"]
     def issueManagement = [system: "github", url: "https://github.com/technipelago/grails-crm-campaign-ui/issues"]
