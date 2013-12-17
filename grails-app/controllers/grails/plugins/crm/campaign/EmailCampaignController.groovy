@@ -74,15 +74,26 @@ class EmailCampaignController {
     }
 
     def preview(Long id) {
-        def crmCampaign = CrmCampaign.get(id)
+        def crmCampaign = CrmCampaign.read(id)
         if (!crmCampaign) {
             flash.error = message(code: 'crmCampaign.not.found.message', args: [message(code: 'crmCampaign.label', default: 'Campaign'), id])
             redirect(controller: "crmCampaign", action: "index")
             return
         }
         if(request.post) {
+            if (params.version) {
+                def version = params.version.toLong()
+                if (crmCampaign.version > version) {
+                    crmCampaign.errors.rejectValue('version', 'crmCampaign.optimistic.locking.failure',
+                            [message(code: 'crmCampaign.label', default: 'Email Campaign')] as Object[],
+                            "Another user has updated this email campaign while you were editing")
+                    render view: "edit", model: [crmCampaign: crmCampaign, cfg: crmCampaign.configuration, url: getNewsletterUrl(crmCampaign)]
+                    return
+                }
+            }
+            params.preview = true // This avoids the hyperlink scanning.
             emailCampaign.configure(crmCampaign, params)
-            if (!crmCampaign.save()) {
+            if (!crmCampaign.validate()) {
                 render view: "edit", model: [crmCampaign: crmCampaign, cfg: crmCampaign.configuration, url: getNewsletterUrl(crmCampaign)]
                 return
             }
