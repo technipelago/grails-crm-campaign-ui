@@ -163,7 +163,7 @@
                                         id="${crmCampaign.id}"
                                         visual="warning"
                                         icon="icon-wrench icon-white"
-                                        label="crmCampaign.button.settings.label"
+                                        label="${crmCampaign.handlerName}.button.settings.label"
                                         title="crmCampaign.button.settings.help"
                                         permission="crmCampaign:edit"/>
                         </g:if>
