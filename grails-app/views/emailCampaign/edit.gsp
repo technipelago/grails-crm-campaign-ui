@@ -31,7 +31,7 @@
                     baseHref: "${createLink(controller: 'static')}",
                     filebrowserBrowseUrl: "${createLink(controller: 'crmContent', action: 'browse', params: [reference: 'crmCampaign@' + crmCampaign.id, status: 'shared'])}",
                     filebrowserUploadUrl: "${createLink(controller: 'crmContent', action: 'upload')}",
-                    filebrowserImageBrowseUrl: "${createLink(controller: 'crmContent', action: 'browse', params: [reference: 'crmCampaign@' + crmCampaign.id, status: 'shared'])}",
+                    filebrowserImageBrowseUrl: "${createLink(controller: 'crmContent', action: 'browse', params: [reference: 'crmCampaign@' + crmCampaign.id, status: 'shared', pattern: 'image'])}",
                     filebrowserImageUploadUrl: "${createLink(controller: 'crmContent', action: 'upload')}"
                 });
             return editor;
