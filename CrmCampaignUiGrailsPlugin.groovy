@@ -1,17 +1,17 @@
 class CrmCampaignUiGrailsPlugin {
     def groupId = "grails.crm"
-    def version = "1.2.1"
+    def version = "1.2.2"
     def grailsVersion = "2.2 > *"
     def dependsOn = [:]
     def loadAfter = ['crmCampaign']
     def pluginExcludes = [
             "grails-app/views/error.gsp"
     ]
-    def title = "Crm Campaign UI Plugin" // Headline display name of the plugin
-    def author = "Göran Ehrsson"
+    def title = "GR8 CRM Campaign UI Plugin"
+    def author = "Goran Ehrsson"
     def authorEmail = "goran@technipelago.se"
     def description = '''\
-Grails CRM Campaign Management User Interface
+GR8 CRM Campaign Management User Interface
 '''
     def documentation = "https://github.com/technipelago/grails-crm-campaign-ui"
     def license = "APACHE"
