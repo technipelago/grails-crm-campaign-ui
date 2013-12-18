@@ -5,6 +5,32 @@
     <meta name="layout" content="main">
     <g:set var="entityName" value="${message(code: 'crmCampaign.label', default: 'Campaign')}"/>
     <title><g:message code="crmCampaign.recipients.title" args="[entityName, crmCampaign]"/></title>
+    <r:script>
+        $(document).ready(function () {
+            // Show detailed recipient information in a popover when user hovers over the email address.
+            $("a.crm-info").popover({
+                trigger: 'hover',
+                html: true,
+                title: "${message(code: 'crmCampaign.recipients.title', args: [entityName, crmCampaign])}",
+                content: function () {
+                    var html = '';
+                    $.ajax({
+                        url: $(this).attr('href'),
+                        success: function (data) { html = data; },
+                        async: false
+                    });
+                    return html;
+                }
+            });
+            $("a.crm-info").click(function (ev) {
+                ev.preventDefault();
+                // Show modal dialog with same recipient information as the popover above.
+                $("#recipient-modal .modal-body").load($(this).attr('href'), function () {
+                    $("#recipient-modal").modal('show');
+                });
+            });
+        });
+    </r:script>
     <style type="text/css">
     tr.crm-opened td {
         color: #009900;
@@ -34,7 +60,7 @@
 </h2>
 
 <div class="row-fluid">
-    <table class="table table-striped">
+    <table class="table table-striped crm-recipients">
         <thead>
         <tr>
             <g:sortableColumn property="email" params="${[id: params.id]}" titleKey="crmCampaignRecipient.email.label">
@@ -60,7 +86,9 @@
             <tr class="${r.dateOptOut ? 'crm-optout' : (r.reason ? 'crm-error' : (r.dateOpened ? 'crm-opened' : ''))}">
 
                 <td>
-                    ${r.email}
+                    <g:link action="showRecipient" id="${r.id}" class="crm-info">
+                        <g:fieldValue bean="${r}" field="email"/>
+                    </g:link>
                 </td>
 
                 <td><g:formatDate type="datetime" style="short" date="${r.dateSent}"/></td>
@@ -95,5 +123,27 @@
     </g:form>
 </div>
 
+
+<div id="recipient-modal" class="modal hide fade">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+        <h3>
+            <g:message code="crmCampaign.recipients.title" args="[entityName, crmCampaign]"/>
+            <small>${crmCampaign.encodeAsHTML()}</small>
+        </h3>
+    </div>
+
+    <div class="modal-body">
+        <p></p>
+    </div>
+
+    <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal">
+            <i class="icon-remove"></i>
+            <g:message code="crmCampaignRecipient.button.close.label" default="Close"/>
+        </a>
+    </div>
+</div>
 </body>
 </html>

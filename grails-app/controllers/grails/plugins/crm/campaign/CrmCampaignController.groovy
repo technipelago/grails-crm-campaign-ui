@@ -12,6 +12,7 @@ class CrmCampaignController {
 
     static allowedMethods = [create: ["GET", "POST"], edit: ["GET", "POST"], delete: "POST"]
 
+    def crmCoreService
     def crmSecurityService
     def selectionService
     def selectionRepositoryService
@@ -92,7 +93,11 @@ class CrmCampaignController {
         def crmCampaign = new CrmCampaign()
         def user = crmSecurityService.getCurrentUser()
         def userList = crmSecurityService.getTenantUsers()
-        def timeList = (0..23).inject([]) { list, h -> 4.times { list << String.format("%02d:%02d", h, it * 15) }; list }
+        def timeList = (0..23).inject([]) { list, h ->
+            4.times {
+                list << String.format("%02d:%02d", h, it * 15)
+            }; list
+        }
         def parentList = CrmCampaign.findAllByTenantId(tenant)
         def statusList = CrmCampaignStatus.findAllByTenantId(tenant)
 
@@ -130,7 +135,11 @@ class CrmCampaignController {
         }
         def user = crmSecurityService.getCurrentUser()
         def userList = crmSecurityService.getTenantUsers()
-        def timeList = (0..23).inject([]) { list, h -> 4.times { list << String.format("%02d:%02d", h, it * 15) }; list }
+        def timeList = (0..23).inject([]) { list, h ->
+            4.times {
+                list << String.format("%02d:%02d", h, it * 15)
+            }; list
+        }
         def parentList = CrmCampaign.findAllByTenantId(tenant)
         def statusList = CrmCampaignStatus.findAllByTenantId(tenant)
         def campaignTypes = getCampaignTypes()
@@ -254,6 +263,24 @@ class CrmCampaignController {
             }
             [crmCampaign: crmCampaign, recipients: recipients, totalCount: recipients.totalCount, hitCount: hitCount]
         }
+    }
+
+    def showRecipient(Long id) {
+        def tenant = TenantUtils.tenant
+        def crmCampaignRecipient = CrmCampaignRecipient.get(id)
+        if (!crmCampaignRecipient) {
+            flash.error = message(code: 'crmCampaignRecipient.not.found.message', args: [message(code: 'crmCampaignRecipient.label', default: 'Recipient'), id])
+            redirect(action: "index")
+            return
+        }
+        def crmCampaign = crmCampaignRecipient.campaign
+        if (crmCampaign?.tenantId != tenant) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN)
+            return
+        }
+        def reference = crmCampaignRecipient.ref ? crmCoreService.getReference(crmCampaignRecipient.ref) : null
+        WebUtils.shortCache(response)
+        render template: "recipient", model: [recipient: crmCampaignRecipient, reference: reference]
     }
 
     def deleteRecipient(Long id) {
