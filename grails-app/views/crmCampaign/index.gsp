@@ -4,6 +4,12 @@
     <meta name="layout" content="main">
     <g:set var="entityName" value="${message(code: 'crmCampaign.label', default: 'Campaign')}"/>
     <title><g:message code="crmCampaign.find.title" args="[entityName]"/></title>
+    <r:require modules="datepicker"/>
+    <r:script>
+        $(document).ready(function () {
+            $('.date').datepicker({weekStart: 1})
+        });
+    </r:script>
 </head>
 
 <body>
