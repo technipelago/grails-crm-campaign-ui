@@ -285,7 +285,7 @@
         <crm:button action="edit" visual="warning" icon="icon-ok icon-white" label="crmCampaign.button.save.label"/>
         <crm:button action="preview" visual="info" icon="icon-eye-open icon-white" label="emailCampaign.button.preview.label"/>
         <crm:button type="link" controller="crmCampaign" action="show" id="${crmCampaign.id}" icon="icon-remove"
-                    label="crmCampaign.button.cancel.label"/>
+                    label="crmCampaign.button.close.label"/>
     </div>
 
 </g:form>
