@@ -17,7 +17,8 @@ class BannerCampaignController {
 
         switch (request.method) {
             case "GET":
-                def cfg = crmCampaign.configuration
+                def cfg = crmCampaign.configuration ?: [:]
+                if(! cfg.url) cfg.url = "http://"
                 return [crmCampaign: crmCampaign, cfg: cfg]
             case "POST":
                 bannerCampaign.configure(crmCampaign, params)
