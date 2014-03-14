@@ -30,10 +30,11 @@ class EmailCampaignController {
         }
 
         if (request.post) {
+            params.parts = params.list('parts')
             emailCampaign.configure(crmCampaign, params)
             if (crmCampaign.save()) {
-                flash.success = "Inställningarna uppdaterade"
-                redirect controller: "crmCampaign", action: "show", id: id
+                flash.success = message(code: 'crmEmailCampaign.updated.message', args: [message(code: 'crmCampaign.label', default: 'Campaign'), crmCampaign.toString()])
+                redirect action: "edit", id: id
             } else {
                 render view: "edit", model: [crmCampaign: crmCampaign, cfg: crmCampaign.configuration, url: getNewsletterUrl(crmCampaign)]
             }
@@ -91,6 +92,7 @@ class EmailCampaignController {
                     return
                 }
             }
+            params.parts = params.list('parts')
             params.preview = true // This avoids the hyperlink scanning.
             emailCampaign.configure(crmCampaign, params)
             if (!crmCampaign.validate()) {
