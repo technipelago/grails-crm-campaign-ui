@@ -168,12 +168,25 @@
                                         permission="crmCampaign:edit"/>
                         </g:if>
 
-                        <crm:button type="link" action="create"
+                        <crm:button type="link" group="true" action="create"
                                     visual="success"
                                     icon="icon-file icon-white"
                                     label="crmCampaign.button.create.label"
                                     title="crmCampaign.button.create.help"
-                                    permission="crmCampaign:create"/>
+                                    permission="crmCampaign:create">
+                            <button class="btn btn-success dropdown-toggle" data-toggle="dropdown">
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <g:link action="copy" id="${crmCampaign?.id}"
+                                            onclick="return confirm('Är du säker på att du vill kopiera denna kampanj?')">
+                                        <g:message code="crmCampaign.button.copy.label" default="Copy Campaign"/>
+                                    </g:link>
+                                </li>
+                            </ul>
+                        </crm:button>
+
                     </div>
 
                 </div>

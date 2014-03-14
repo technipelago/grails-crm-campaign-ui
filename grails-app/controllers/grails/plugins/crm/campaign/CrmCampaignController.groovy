@@ -3,7 +3,6 @@ package grails.plugins.crm.campaign
 import grails.plugins.crm.core.DateUtils
 import grails.plugins.crm.core.TenantUtils
 import grails.plugins.crm.core.WebUtils
-import grails.util.GrailsNameUtils
 import org.springframework.dao.DataIntegrityViolationException
 
 import javax.servlet.http.HttpServletResponse
@@ -16,6 +15,7 @@ class CrmCampaignController {
     def crmSecurityService
     def selectionService
     def selectionRepositoryService
+    def crmCampaignService
     def crmEmailCampaignService
 
     def index() {
@@ -23,7 +23,7 @@ class CrmCampaignController {
         def cmd = new CrmCampaignQueryCommand()
         def query = params.getSelectionQuery()
         bindData(cmd, query ?: WebUtils.getTenantData(request, 'crmCampaignQuery'))
-        [cmd: cmd, campaignTypes: getCampaignTypes(), activeCampaigns: getActiveCampaigns()]
+        [cmd: cmd, campaignTypes: crmCampaignService.getEnabledCampaignHandlers(), activeCampaigns: getActiveCampaigns()]
     }
 
     def list() {
@@ -46,7 +46,12 @@ class CrmCampaignController {
         def result
         try {
             result = selectionService.select(uri, params)
-            [crmCampaignList: result, crmCampaignTotal: result.totalCount, selection: uri]
+            if (result.size() == 1) {
+                // If we only got one record, show the record immediately.
+                redirect action: "show", params: selectionService.createSelectionParameters(uri) + [id: result.head().ident()]
+            } else {
+                [crmCampaignList: result, crmCampaignTotal: result.totalCount, selection: uri]
+            }
         } catch (Exception e) {
             flash.error = e.message
             [crmCampaignList: [], crmCampaignTotal: 0, selection: uri]
@@ -56,10 +61,6 @@ class CrmCampaignController {
     def clearQuery() {
         WebUtils.setTenantData(request, 'crmCampaignQuery', null)
         redirect(action: 'index')
-    }
-
-    private List getCampaignTypes() {
-        grailsApplication.campaignClasses.collect { GrailsNameUtils.getPropertyName(it.clazz) }
     }
 
     private List getActiveCampaigns(int max = 10) {
@@ -89,7 +90,7 @@ class CrmCampaignController {
 
     def create() {
         def tenant = TenantUtils.tenant
-        def campaignTypes = getCampaignTypes()
+        def campaignTypes = crmCampaignService.getEnabledCampaignHandlers()
         def crmCampaign = new CrmCampaign()
         def user = crmSecurityService.getCurrentUser()
         def userList = crmSecurityService.getTenantUsers()
@@ -142,7 +143,7 @@ class CrmCampaignController {
         }
         def parentList = CrmCampaign.findAllByTenantId(tenant)
         def statusList = CrmCampaignStatus.findAllByTenantId(tenant)
-        def campaignTypes = getCampaignTypes()
+        def campaignTypes = crmCampaignService.getEnabledCampaignHandlers()
         switch (request.method) {
             case "GET":
                 return [crmCampaign: crmCampaign, parentList: parentList, timeList: timeList, campaignTypes: campaignTypes, statusList: statusList, userList: userList]
@@ -191,8 +192,7 @@ class CrmCampaignController {
         }
 
         try {
-            def tombstone = crmCampaign.toString()
-            crmCampaign.delete(flush: true)
+            def tombstone = crmCampaignService.deleteCampaign(crmCampaign)
             flash.warning = message(code: 'crmCampaign.deleted.message', args: [message(code: 'crmCampaign.label', default: 'Campaign'), tombstone])
             redirect(action: "index")
         }
@@ -302,5 +302,26 @@ class CrmCampaignController {
         }
         flash.warning = message(code: 'crmCampaignRecipient.deleted.message', args: [message(code: 'crmCampaignRecipient.label', default: 'Recipient'), tombstone])
         redirect action: "recipients", id: crmCampaign.id
+    }
+
+    def copy(Long id) {
+
+        def tenant = TenantUtils.tenant
+        def templateCampaign = CrmCampaign.findByIdAndTenantId(id, tenant)
+        if (!templateCampaign) {
+            flash.error = message(code: 'crmCampaign.not.found.message', args: [message(code: 'crmCampaign.label', default: 'Campaign'), id])
+            redirect(action: "index")
+            return
+        }
+
+        def crmCampaign = crmCampaignService.copyCampaign(templateCampaign, true)
+        if (crmCampaign.hasErrors()) {
+            log.error crmCampaign.errors.allErrors.toString()
+            flash.error = message(code: 'crmCampaign.copy.error', args: [message(code: 'crmCampaign.label', default: 'Campaign'), templateCampaign.toString()])
+            redirect(action: "show", id: templateCampaign.id)
+        } else {
+            flash.success = message(code: 'crmCampaign.copied.message', args: [message(code: 'crmCampaign.label', default: 'Campaign'), crmCampaign.toString()])
+            redirect(action: "show", id: crmCampaign.id)
+        }
     }
 }
