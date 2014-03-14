@@ -7,16 +7,13 @@
     <r:require modules="datepicker,autocomplete,aligndates"/>
     <r:script>
         $(document).ready(function () {
-
-            $('#startDate').closest('.date').datepicker({weekStart: 1}).on('changeDate', function (ev) {
-                alignDates($("#startDate"), $("#endDate"), false, ".date");
-            });
+            <crm:datepicker selector="#startDateContainer">.on('changeDate', function (ev) {
+                            alignDates($("#startDate"), $("#endDate"), false, ".date")})</crm:datepicker>
             $("#startDate").blur(function (ev) {
                 alignDates($(this), $("#endDate"), false, ".date");
             });
-            $('#endDate').closest('.date').datepicker({weekStart: 1}).on('changeDate', function (ev) {
-                alignDates($("#endDate"), $("#startDate"), true, ".date");
-            });
+            <crm:datepicker selector="#endDateContainer">.on('changeDate', function (ev) {
+                alignDates($("#endDate"), $("#startDate"), true, ".date")})</crm:datepicker>
             $("#endDate").blur(function (ev) {
                 alignDates($(this), $("#startDate"), true, ".date");
             });
@@ -60,11 +57,16 @@
 
             <div class="span4">
                 <div class="row-fluid">
+
+                    <f:field property="status">
+                        <g:select name="status.id" from="${statusList}" optionKey="id" value="${crmCampaign.statusId}"/>
+                    </f:field>
+
                     <div class="control-group">
                         <label class="control-label"><g:message code="crmCampaign.startTime.label"/></label>
 
                         <div class="controls">
-                            <span class="input-append date"
+                            <span id="startDateContainer" class="input-append date"
                                   data-date="${formatDate(format: 'yyyy-MM-dd', date: crmCampaign.startTime ?: new Date())}">
                                 <g:textField name="startDate" class="span10" size="10"
                                              placeholder="ÅÅÅÅ-MM-DD"
@@ -83,7 +85,7 @@
                         <label class="control-label"><g:message code="crmCampaign.endTime.label"/></label>
 
                         <div class="controls">
-                            <span class="input-append date"
+                            <span id="endDateContainer" class="input-append date"
                                   data-date="${formatDate(format: 'yyyy-MM-dd', date: crmCampaign.endTime ?: new Date())}">
                                 <g:textField name="endDate" class="span10" size="10" placeholder="ÅÅÅÅ-MM-DD"
                                              value="${formatDate(format: 'yyyy-MM-dd', date: crmCampaign.endTime)}"/><span
@@ -96,9 +98,6 @@
                             --%>
                         </div>
                     </div>
-                    <f:field property="status">
-                        <g:select name="status.id" from="${statusList}" optionKey="id" value="${crmCampaign.statusId}"/>
-                    </f:field>
 
                 </div>
             </div>
