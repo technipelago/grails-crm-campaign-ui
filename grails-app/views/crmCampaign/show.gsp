@@ -4,31 +4,16 @@
     <meta name="layout" content="main">
     <g:set var="entityName" value="${message(code: 'crmCampaign.label', default: 'Campaign')}"/>
     <title><g:message code="crmCampaign.show.title" args="[entityName, crmCampaign]"/></title>
-    <%--
     <r:script>
-        $(document).ready(function () {
-            var $container = $("#image-list");
-            if($container) {
-                $.getJSON("${createLink(controller: 'crmCampaignResource', action: 'images', params: [id: crmCampaign.id, cache: false])}", function(data) {
-                    for(var i = 0; i < data.length; i++) {
-                        var image = data[i];
-                        $container.append($("<img/>").attr("src", image.uri).attr("alt", image.name));
-                    }
-                    if(data.length > 0) {
-                        $container.show();
-                    }
-                });
-            }
+    $(document).ready(function() {
+        <% if(crmCampaign.handlerName) { %>
+        $("#summary").load("${createLink(controller: crmCampaign.handlerName, action: 'summary', id: crmCampaign.id)}", function(data) {
+            console.log(data);
+            $("#summary").show();
         });
+        <% } %>
+    });
     </r:script>
-    --%>
-    <style type="text/css">
-    #image-list img {
-        border: 1px dashed #999;
-        border-radius: 5px;
-        margin-bottom: 5px;
-    }
-    </style>
 </head>
 
 <body>
@@ -212,13 +197,12 @@
 
     <div class="span3">
 
-        <div class="alert alert-${crmCampaign.active ? 'error' : 'info'}">
-            <g:render template="summary" model="${[bean: crmCampaign]}"/>
+        <div id="summary" class="alert alert-${crmCampaign.active ? 'error' : 'info'} hide">
+            <%-- <g:render template="summary" model="${[bean: crmCampaign]}"/> --%>
         </div>
 
         <g:render template="/tags" plugin="crm-tags" model="${[bean: crmCampaign]}"/>
 
-        <div id="image-list" class="hide"></div>
     </div>
 </div>
 

@@ -1,8 +1,20 @@
 package grails.plugins.crm.campaign
 
+import javax.servlet.http.HttpServletResponse
+import grails.plugins.crm.core.TenantUtils
+
 class ProductDiscountCampaignController {
 
     def productDiscountCampaign
+
+    def summary(Long id) {
+        def crmCampaign = CrmCampaign.findByIdAndTenantId(id, TenantUtils.tenant)
+        if (!crmCampaign) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND)
+            return
+        }
+        render template: "summary", model: [bean: crmCampaign]
+    }
 
     def edit(Long id) {
         def crmCampaign = CrmCampaign.get(id)

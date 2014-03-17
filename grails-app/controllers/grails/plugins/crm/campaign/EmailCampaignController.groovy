@@ -2,8 +2,11 @@ package grails.plugins.crm.campaign
 
 import grails.converters.JSON
 import grails.plugins.crm.content.CrmResourceRef
+import grails.plugins.crm.core.TenantUtils
 import grails.plugins.crm.core.SearchUtils
 import org.apache.commons.lang.StringUtils
+
+import javax.servlet.http.HttpServletResponse
 
 /**
  * Email Campaign Configurator.
@@ -17,7 +20,23 @@ class EmailCampaignController {
     def crmContentService
 
     private String getNewsletterUrl(CrmCampaign campaign) {
-        grailsApplication.config.crm.web.url + '/newsletter/' + campaign.publicId + '.html'
+        def serverURL = grailsApplication.config.crm.web.url ?: grailsApplication.config.grails.serverURL
+        if(! serverURL) {
+            serverURL = 'http://localhost:8080/' + grailsApplication.metadata['app.name']
+        }
+        def newsletterURL = grailsApplication.config.crm.campaign.email.url ?: 'newsletter'
+        return "${serverURL}/${newsletterURL}/${campaign.publicId}.html"
+    }
+
+    def summary(Long id) {
+        def crmCampaign = CrmCampaign.findByIdAndTenantId(id, TenantUtils.tenant)
+        if (!crmCampaign) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND)
+            return
+        }
+        def count = CrmCampaignRecipient.countByCampaign(crmCampaign)
+        def cfg = crmCampaign.configuration
+        render template: "summary", model: [bean: crmCampaign, recipients: count, cfg: cfg]
     }
 
     def edit(Long id) {
@@ -81,7 +100,7 @@ class EmailCampaignController {
             redirect(controller: "crmCampaign", action: "index")
             return
         }
-        if(request.post) {
+        if (request.post) {
             if (params.version) {
                 def version = params.version.toLong()
                 if (crmCampaign.version > version) {
