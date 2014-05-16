@@ -4,15 +4,23 @@
     <meta name="layout" content="main">
     <g:set var="entityName" value="${message(code: 'crmCampaign.label', default: 'Campaign')}"/>
     <title><g:message code="crmCampaign.show.title" args="[entityName, crmCampaign]"/></title>
+    <r:require module="d3"/>
     <r:script>
     $(document).ready(function() {
-        <% if(crmCampaign.handlerName) { %>
+        <% if (crmCampaign.handlerName) { %>
         $("#summary").load("${createLink(controller: crmCampaign.handlerName, action: 'summary', id: crmCampaign.id)}", function(data) {
-            console.log(data);
-            $("#summary").show();
+            if(data) {
+                $("#summary").show();
+            }
+        });
+        $("#statistics").load("${
+            createLink(controller: crmCampaign.handlerName, action: 'statistics', id: crmCampaign.id)}", function(data) {
+            if(data) {
+                $("#statistics").show();
+            }
         });
         <% } %>
-    });
+        });
     </r:script>
 </head>
 
@@ -203,6 +211,9 @@
 
         <g:render template="/tags" plugin="crm-tags" model="${[bean: crmCampaign]}"/>
 
+        <div id="statistics" class="well well-small hide">
+            <%-- This space is rendered by the campaign controller --%>
+        </div>
     </div>
 </div>
 

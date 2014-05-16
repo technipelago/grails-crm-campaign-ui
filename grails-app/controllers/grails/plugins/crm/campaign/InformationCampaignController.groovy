@@ -32,6 +32,10 @@ class InformationCampaignController {
         render template: "summary", model: [bean: crmCampaign]
     }
 
+    def statistics(Long id) {
+        render ''
+    }
+
     def edit(Long id) {
         def crmCampaign = CrmCampaign.get(id)
         if (!crmCampaign) {

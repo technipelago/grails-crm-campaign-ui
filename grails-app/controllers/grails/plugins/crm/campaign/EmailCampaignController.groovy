@@ -21,7 +21,7 @@ class EmailCampaignController {
 
     private String getNewsletterUrl(CrmCampaign campaign) {
         def serverURL = grailsApplication.config.crm.web.url ?: grailsApplication.config.grails.serverURL
-        if(! serverURL) {
+        if (!serverURL) {
             serverURL = 'http://localhost:8080/' + grailsApplication.metadata['app.name']
         }
         def newsletterURL = grailsApplication.config.crm.campaign.email.url ?: 'newsletter'
@@ -37,6 +37,23 @@ class EmailCampaignController {
         def count = CrmCampaignRecipient.countByCampaign(crmCampaign)
         def cfg = crmCampaign.configuration
         render template: "summary", model: [bean: crmCampaign, recipients: count, cfg: cfg]
+    }
+
+    def statistics(Long id) {
+        def crmCampaign = CrmCampaign.findByIdAndTenantId(id, TenantUtils.tenant)
+        if (!crmCampaign) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND)
+            return
+        }
+        def count = CrmCampaignRecipient.countByCampaign(crmCampaign)
+        def cfg = crmCampaign.configuration
+        def stats = crmEmailCampaignService.getStatistics(crmCampaign)
+        if(stats.dateOpened) {
+            stats.opened = Math.round(stats.dateOpened / stats.dateSent * 100)
+        } else {
+            stats.opened = 0
+        }
+        render template: "statistics", model: [bean: crmCampaign, recipients: count, cfg: cfg, stats: stats]
     }
 
     def edit(Long id) {

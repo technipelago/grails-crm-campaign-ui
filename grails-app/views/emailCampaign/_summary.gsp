@@ -9,7 +9,7 @@
 <p>Utskickets rubrik är <strong>${cfg.subject}</strong></p>
 
 <g:if test="${recipients}">
-    Utskicket har skickats till ${recipients} mottagare.
+    Utskicket har skickats till ${recipients} st mottagare.
 </g:if>
 <g:else>
     Utskicket har inte skickats till några mottagare än.
