@@ -4,6 +4,7 @@ import grails.converters.JSON
 import grails.plugins.crm.content.CrmResourceRef
 import grails.plugins.crm.core.TenantUtils
 import grails.plugins.crm.core.SearchUtils
+import grails.plugins.crm.core.WebUtils
 import org.apache.commons.lang.StringUtils
 
 import javax.servlet.http.HttpServletResponse
@@ -119,6 +120,7 @@ class EmailCampaignController {
         }
         def result = tmpl.dao
         result.body = tmpl.text
+        WebUtils.shortCache(response)
         render result as JSON
     }
 
