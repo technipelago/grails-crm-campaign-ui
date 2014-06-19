@@ -36,7 +36,7 @@
                         $newContent.html($oldContent.html());
                     }
                 });
-                return $newDocument.html();
+                return $('<div>').append($newDocument).html();
             }
         };
 
