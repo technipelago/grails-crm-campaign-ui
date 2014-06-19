@@ -35,6 +35,24 @@
                     filebrowserImageUploadUrl: "${createLink(controller: 'crmContent', action: 'upload')}"
                 });
             return editor;
+            },
+            applyTemplate: function(oldHtml, newHtml) {
+                var $oldDocument = $(oldHtml);
+                var $newDocument = $(newHtml);
+                // Find all elements in old content with an 'id' attribute.
+                $oldDocument.find("[id]").each(function() {
+                    var $oldContent = $(this);
+                    // Replace same marker (id) in new template with old content.
+                    var $newContent = $("#" + this.id, $newDocument);
+                    if($newContent.length == 0) {
+                        // That id was not found in the new template, append content to the end of template
+                        $newDocument.append($oldContent);
+                    } else {
+                        // Replace placeholder in new template with old content.
+                        $newContent.html($oldContent.html());
+                    }
+                });
+                return $newDocument.html();
             }
         };
 
@@ -46,23 +64,7 @@
                 e.preventDefault();
                 var path = $(this).attr('href');
                 $.getJSON("${createLink(action: 'template')}", {path: path}, function(data) {
-                    // Save old content
-                    var $oldContent = $(CKEDITOR.instances.bodycontent.getData());
-                    var $oldBody = $("#body", $oldContent);
-                    if($oldBody.length == 0) {
-                        $oldBody = $oldContent
-                    } else {
-                        $oldBody = $oldBody.children();
-                    }
-                    // Replace marker in new template with old content.
-                    var $newContent = $(data.body);
-                    var $newBody = $("#body", $newContent);
-                    if($newBody.length == 0) {
-                        $newContent.append($oldBody);
-                    } else {
-                        $newBody.html($oldBody);
-                    }
-                    CKEDITOR.instances.bodycontent.setData($newContent.html());
+                    CKEDITOR.instances.bodycontent.setData(CRM.applyTemplate(CKEDITOR.instances.bodycontent.getData(), data.body));
                 });
             });
         });
@@ -137,18 +139,20 @@
         <crm:button action="edit" visual="warning" icon="icon-ok icon-white" label="crmCampaign.button.save.label"/>
         <crm:button action="preview" visual="info" icon="icon-eye-open icon-white"
                     label="emailCampaign.button.preview.label"/>
-        <div class="btn-group">
-            <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" href="#">
-                <i class="icon-file icon-white"></i>
-                Välj mall
-                <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu" id="templates">
-                <g:each in="${metadata.templates}" var="t">
-                    <li><a href="${t.path}">${t.name.encodeAsHTML()}</a></li>
-                </g:each>
-            </ul>
-        </div>
+        <g:if test="${metadata.templates}">
+            <div class="btn-group">
+                <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" href="#">
+                    <i class="icon-file icon-white"></i>
+                    Välj mall
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu" id="templates">
+                    <g:each in="${metadata.templates}" var="t">
+                        <li><a href="${t.path}">${t.name.encodeAsHTML()}</a></li>
+                    </g:each>
+                </ul>
+            </div>
+        </g:if>
         <crm:button type="link" controller="crmCampaign" action="show" id="${crmCampaign.id}" icon="icon-remove"
                     label="crmCampaign.button.close.label"/>
     </div>
