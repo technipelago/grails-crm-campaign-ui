@@ -62,10 +62,12 @@
 
             $("#templates a").click(function(e) {
                 e.preventDefault();
-                var path = $(this).attr('href');
-                $.getJSON("${createLink(action: 'template')}", {path: path}, function(data) {
-                    CKEDITOR.instances.bodycontent.setData(CRM.applyTemplate(CKEDITOR.instances.bodycontent.getData(), data.body));
-                });
+                if(confirm("${message(code: 'emailCampaign.template.change.confirm')} " + $(this).text())) {
+                    var path = $(this).attr('href');
+                    $.getJSON("${createLink(action: 'template')}", {path: path}, function(data) {
+                        CKEDITOR.instances.bodycontent.setData(CRM.applyTemplate(CKEDITOR.instances.bodycontent.getData(), data.body));
+                    });
+                }
             });
         });
     </r:script>
