@@ -10,28 +10,12 @@
             createEditor: function(id) {
              var editor = CKEDITOR.replace(id,
                 {
-                    width: '98.3%',
-                    height: '400px',
-                    resize_enabled: true,
-                    startupFocus: true,
-                    skin: 'kama',
-                    toolbar: [
-                        ['Styles', 'Format', 'Font', 'FontSize'],
-                        ['Source'],
-                        '/',
-                        ['Bold', 'Italic', 'Underline', 'Strike', 'TextColor', 'BGColor', 'RemoveFormat'],
-                        ['Paste', 'PasteText', 'PasteFromWord'],
-                        ['JustifyLeft', 'JustifyCenter', 'JustifyRight'],
-                        ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent'],
-                        ['Image', 'Link', 'Unlink'],
-                        ['Table', 'HorizontalRule']
-                    ],
-                    basicEntities: false,
-                    protectedSource: [/\[@link\s+[\s\S]*?\[\/@link\]/g, /\[#[\s\S]*?\]/g],
+                    customConfig: "${resource(dir: 'js', file: 'crm-ckeditor-config.js', plugin: 'crm-content-ui')}",
+                    stylesSet: "crm-no-styles:${resource(dir: 'js', file: 'crm-ckeditor-styles.js', plugin: 'crm-content-ui')}",
                     baseHref: "${createLink(controller: 'static')}",
                     filebrowserBrowseUrl: "${createLink(controller: 'crmContent', action: 'browse', params: [reference: 'crmCampaign@' + crmCampaign.id, status: 'shared'])}",
                     filebrowserUploadUrl: "${createLink(controller: 'crmContent', action: 'upload')}",
-                    filebrowserImageBrowseUrl: "${createLink(controller: 'crmContent', action: 'browse', params: [reference: 'crmCampaign@' + crmCampaign.id, status: 'shared', pattern: 'image'])}",
+                    filebrowserImageBrowseUrl: "${createLink(controller: 'crmContent', action: 'browse', params: [pattern: 'image', reference: 'crmCampaign@' + crmCampaign.id, status: 'shared', pattern: 'image'])}",
                     filebrowserImageUploadUrl: "${createLink(controller: 'crmContent', action: 'upload')}"
                 });
             return editor;
@@ -108,10 +92,10 @@
         <div class="span4">
 
             <div class="control-group">
-                <label class="control-label">Avsändarens e-postadress</label>
+                <label class="control-label">Avsändarens namn</label>
 
                 <div class="controls">
-                    <g:textField name="sender" value="${cfg.sender}" class="span11"/>
+                    <g:textField name="senderName" value="${cfg.senderName}" class="span11"/>
                 </div>
             </div>
 
@@ -120,10 +104,10 @@
         <div class="span4">
 
             <div class="control-group">
-                <label class="control-label">Avsändarens namn</label>
+                <label class="control-label">Avsändarens e-postadress</label>
 
                 <div class="controls">
-                    <g:textField name="senderName" value="${cfg.senderName}" class="span11"/>
+                    <g:textField name="sender" value="${cfg.sender}" class="span11"/>
                 </div>
             </div>
 
