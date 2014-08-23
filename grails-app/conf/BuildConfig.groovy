@@ -9,6 +9,7 @@ grails.project.dependency.resolution = {
     legacyResolve false
     repositories {
         grailsCentral()
+        mavenRepo "http://labs.technipelago.se/repo/crm-releases-local/"
         mavenCentral()
     }
     dependencies {
@@ -36,9 +37,10 @@ grails.project.dependency.resolution = {
 
         compile ":ckeditor:4.4.1.0"
 
-        //compile ":crm-campaign:2.0.0"
         compile ":crm-ui-bootstrap:2.0.0"
+
+        compile "grails.crm:crm-campaign:1.3.0"
     }
 }
 
-grails.plugin.location.'crm-campaign' = "../crm-campaign"
+//grails.plugin.location.'crm-campaign' = "../crm-campaign"
