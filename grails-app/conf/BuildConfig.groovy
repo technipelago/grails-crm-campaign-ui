@@ -31,7 +31,7 @@ grails.project.dependency.resolution = {
         test(":codenarc:0.21") { export = false }
         test(":code-coverage:1.2.7") { export = false }
 
-        compile ":selection:0.9.7"
+        compile ":selection:0.9.8"
         compile ":selection-repository:0.9.3"
         compile ":decorator:1.1"
 
