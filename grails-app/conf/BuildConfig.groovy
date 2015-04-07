@@ -3,44 +3,51 @@ grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 grails.project.target.level = 1.6
 
+grails.project.fork = [
+    //  compile: [maxMemory: 256, minMemory: 64, debug: false, maxPerm: 256, daemon:true],
+    test: false,
+    run: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, forkReserve:false],
+    war: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256, forkReserve:false],
+    console: [maxMemory: 768, minMemory: 64, debug: false, maxPerm: 256]
+]
+
+grails.project.dependency.resolver = "maven"
 grails.project.dependency.resolution = {
     inherits("global") {}
     log "warn"
     legacyResolve false
     repositories {
         grailsCentral()
-        mavenRepo "http://labs.technipelago.se/repo/crm-releases-local/"
+        mavenLocal()
         mavenCentral()
     }
     dependencies {
-        test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
+        compile "org.ccil.cowan.tagsoup:tagsoup:1.2.1"
+        // See https://jira.grails.org/browse/GPHIB-30
+        test("javax.validation:validation-api:1.1.0.Final") { export = false }
+        test("org.hibernate:hibernate-validator:5.0.3.Final") { export = false }
     }
 
     plugins {
-        build(":tomcat:$grailsVersion",
-                ":release:2.2.1",
+        build(":release:3.0.1",
                 ":rest-client-builder:1.0.3") {
             export = false
         }
-        runtime ":hibernate:$grailsVersion"
-
-        test(":spock:0.7") {
+        test(":hibernate4:4.3.6.1") {
+            excludes "net.sf.ehcache:ehcache-core"  // remove this when http://jira.grails.org/browse/GPHIB-18 is resolved
             export = false
-            exclude "spock-grails-support"
         }
-        test(":codenarc:0.21") { export = false }
-        test(":code-coverage:1.2.7") { export = false }
 
-        compile ":selection:0.9.8"
-        compile ":selection-repository:0.9.3"
+        test(":codenarc:0.22") { export = false }
+        test(":code-coverage:2.0.3-3") { export = false }
+        test(":greenmail:1.3.4") { export = false }
+
         compile ":decorator:1.1"
-
         compile ":ckeditor:4.4.1.0"
 
-        compile ":crm-ui-bootstrap:2.0.0"
-
-        compile "grails.crm:crm-campaign:1.3.0"
+        compile ":crm-ui-bootstrap:2.4.0"
+        compile ":crm-tags:2.4.0"
+        compile ":crm-content:2.4.1-SNAPSHOT"
+        compile ":crm-campaign:2.4.0-SNAPSHOT"
     }
 }
-
-//grails.plugin.location.'crm-campaign' = "../crm-campaign"
