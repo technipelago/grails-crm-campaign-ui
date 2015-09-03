@@ -37,28 +37,40 @@
 
                     <div class="span4">
                         <div class="row-fluid">
-                            <f:field property="fromDate">
-                                <div class="input-append date"
-                                     data-date="${formatDate(format: 'yyyy-MM-dd', date: cmd.fromDate ?: new Date())}">
-                                    <g:textField name="fromDate" class="span12" placeholder="ÅÅÅÅ-MM-DD"
-                                                 value="${formatDate(format: 'yyyy-MM-dd', date: cmd.fromDate)}"/><span
-                                        class="add-on"><i
-                                            class="icon-th"></i></span>
+                            <div class="control-group">
+                                <label class="control-label">
+                                    <g:message code="crmCampaignQueryCommand.fromDate.label"/>
+                                </label>
+
+                                <div class="controls">
+                                    <div class="input-append date"
+                                         data-date="${formatDate(format: 'yyyy-MM-dd', date: cmd.fromDate ?: new Date())}">
+                                        <g:textField name="fromDate" class="span12" placeholder="ÅÅÅÅ-MM-DD"
+                                                     value="${formatDate(format: 'yyyy-MM-dd', date: cmd.fromDate)}"/><span
+                                            class="add-on"><i class="icon-th"></i></span>
+                                    </div>
                                 </div>
-                            </f:field>
-                            <f:field property="toDate">
-                                <div class="input-append date"
-                                     data-date="${formatDate(format: 'yyyy-MM-dd', date: cmd.toDate ?: new Date())}">
-                                    <g:textField name="toDate" class="span12" placeholder="ÅÅÅÅ-MM-DD"
-                                                 value="${formatDate(format: 'yyyy-MM-dd', date: cmd.toDate)}"/><span
-                                        class="add-on"><i
-                                            class="icon-th"></i></span>
+                            </div>
+
+                            <div class="control-group">
+                                <label class="control-label">
+                                    <g:message code="crmCampaignQueryCommand.toDate.label"/>
+                                </label>
+
+                                <div class="controls">
+                                    <div class="input-append date"
+                                         data-date="${formatDate(format: 'yyyy-MM-dd', date: cmd.toDate ?: new Date())}">
+                                        <g:textField name="toDate" class="span12" placeholder="ÅÅÅÅ-MM-DD"
+                                                     value="${formatDate(format: 'yyyy-MM-dd', date: cmd.toDate)}"/><span
+                                            class="add-on"><i class="icon-th"></i></span>
+                                    </div>
                                 </div>
-                            </f:field>
+                            </div>
+
+                            <f:field property="status" label="crmCampaign.status.label"
+                                     input-class="span11"
+                                     input-placeholder="${message(code: 'crmCampaignQueryCommand.status.placeholder', default: '')}"/>
                         </div>
-                        <f:field property="status" label="crmCampaign.status.label"
-                                 input-class="span11"
-                                 input-placeholder="${message(code: 'crmCampaignQueryCommand.status.placeholder', default: '')}"/>
                     </div>
 
                     <div class="span4">
