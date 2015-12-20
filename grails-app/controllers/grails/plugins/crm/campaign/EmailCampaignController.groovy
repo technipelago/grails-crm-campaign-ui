@@ -5,6 +5,7 @@ import grails.plugins.crm.content.CrmResourceRef
 import grails.plugins.crm.core.TenantUtils
 import grails.plugins.crm.core.SearchUtils
 import grails.plugins.crm.core.WebUtils
+import grails.transaction.Transactional
 import org.apache.commons.lang.StringUtils
 
 import javax.servlet.http.HttpServletResponse
@@ -62,6 +63,7 @@ class EmailCampaignController {
         }
     }
 
+    @Transactional
     def edit(Long id) {
 
         def crmCampaign = CrmCampaign.get(id)
