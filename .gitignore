@@ -1,12 +1,10 @@
-# Ignore Intellij IDEA files
+.gradle
 .idea
 *.iml
 
-# Ignore build artifacts
 target
 tomcat.*
 
-# Ignore packaged plugins
 *.zip
 *.zip.sha1
 
