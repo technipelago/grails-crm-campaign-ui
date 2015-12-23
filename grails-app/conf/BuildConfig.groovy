@@ -43,7 +43,7 @@ grails.project.dependency.resolution = {
         test(":greenmail:1.3.4") { export = false }
 
         compile ":decorator:1.1"
-        compile ":ckeditor:4.4.1.0"
+        compile ":ckeditor:4.5.4.0"
 
         compile ":crm-ui-bootstrap:2.4.0"
         compile ":crm-tags:2.4.0"
