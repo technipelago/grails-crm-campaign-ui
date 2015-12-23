@@ -66,10 +66,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <f:field property="status" label="crmCampaign.status.label"
-                                     input-class="span11"
-                                     input-placeholder="${message(code: 'crmCampaignQueryCommand.status.placeholder', default: '')}"/>
                         </div>
                     </div>
 

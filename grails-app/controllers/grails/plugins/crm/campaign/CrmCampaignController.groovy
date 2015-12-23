@@ -100,7 +100,6 @@ class CrmCampaignController {
             }; list
         }
         def parentList = CrmCampaign.findAllByTenantId(tenant)
-        def statusList = CrmCampaignStatus.findAllByTenantId(tenant)
 
         bindData(crmCampaign, params, [include: CrmCampaign.BIND_WHITELIST])
         crmCampaign.handlerName = params.handlerName
@@ -114,10 +113,10 @@ class CrmCampaignController {
 
         switch (request.method) {
             case "GET":
-                return [crmCampaign: crmCampaign, campaignTypes: campaignTypes, parentList: parentList, timeList: timeList, statusList: statusList, userList: userList]
+                return [crmCampaign: crmCampaign, campaignTypes: campaignTypes, parentList: parentList, timeList: timeList, userList: userList]
             case "POST":
                 if (crmCampaign.hasErrors() || !crmCampaign.save()) {
-                    render(view: "create", model: [crmCampaign: crmCampaign, campaignTypes: campaignTypes, parentList: parentList, timeList: timeList, statusList: statusList, userList: userList])
+                    render(view: "create", model: [crmCampaign: crmCampaign, campaignTypes: campaignTypes, parentList: parentList, timeList: timeList, userList: userList])
                     return
                 }
                 flash.success = message(code: 'crmCampaign.created.message', args: [message(code: 'crmCampaign.label', default: 'Campaign'), crmCampaign.toString()])
@@ -142,18 +141,17 @@ class CrmCampaignController {
             }; list
         }
         def parentList = CrmCampaign.findAllByTenantId(tenant)
-        def statusList = CrmCampaignStatus.findAllByTenantId(tenant)
         def campaignTypes = crmCampaignService.getEnabledCampaignHandlers()
         switch (request.method) {
             case "GET":
-                return [crmCampaign: crmCampaign, parentList: parentList, timeList: timeList, campaignTypes: campaignTypes, statusList: statusList, userList: userList]
+                return [crmCampaign: crmCampaign, parentList: parentList, timeList: timeList, campaignTypes: campaignTypes, userList: userList]
             case "POST":
                 if (params.int('version') != null) {
                     if (crmCampaign.version > params.int('version')) {
                         crmCampaign.errors.rejectValue("version", "crmCampaign.optimistic.locking.failure",
                                 [message(code: 'crmCampaign.label', default: 'Campaign')] as Object[],
                                 "Another user has updated this Campaign while you were editing")
-                        render(view: "edit", model: [crmCampaign: crmCampaign, parentList: parentList, timeList: timeList, campaignTypes: campaignTypes, statusList: statusList, userList: userList])
+                        render(view: "edit", model: [crmCampaign: crmCampaign, parentList: parentList, timeList: timeList, campaignTypes: campaignTypes, userList: userList])
                         return
                     }
                 }
@@ -171,7 +169,7 @@ class CrmCampaignController {
                 bindDate(crmCampaign, 'endTime', endDate ? endDate + ' ' + endTime : null, user?.timezoneInstance)
 
                 if (!crmCampaign.save(flush: true)) {
-                    render(view: "edit", model: [crmCampaign: crmCampaign, parentList: parentList, timeList: timeList, campaignTypes: campaignTypes, statusList: statusList, userList: userList])
+                    render(view: "edit", model: [crmCampaign: crmCampaign, parentList: parentList, timeList: timeList, campaignTypes: campaignTypes, userList: userList])
                     return
                 }
 

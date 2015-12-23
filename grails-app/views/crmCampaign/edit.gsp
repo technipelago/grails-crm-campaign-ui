@@ -67,10 +67,6 @@
             <div class="span4">
                 <div class="row-fluid">
 
-                    <f:field property="status">
-                        <g:select name="status.id" from="${statusList}" optionKey="id" value="${crmCampaign.statusId}"/>
-                    </f:field>
-
                     <div class="control-group">
                         <label class="control-label"><g:message code="crmCampaign.startTime.label"/></label>
 

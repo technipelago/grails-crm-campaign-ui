@@ -9,8 +9,7 @@
 
         <th><g:message code="crmCampaign.startTime.label" default="Starts"/></th>
         <th><g:message code="crmCampaign.endTime.label" default="Ends"/></th>
-        <crm:sortableColumn property="status"
-                            title="${message(code: 'crmCampaign.status.label', default: 'Status')}"/>
+        <th><g:message code="crmCampaign.status.label" default="Status"/></th>
     </tr>
     </thead>
     <tbody>
@@ -37,7 +36,7 @@
                 <g:formatDate type="date" date="${crmCampaign.endTime}"/>
             </td>
             <td>
-                <g:fieldValue bean="${crmCampaign}" field="status"/>
+                ${crmCampaign.active ? 'Aktiv' : 'Inaktiv'}
             </td>
         </tr>
     </g:each>

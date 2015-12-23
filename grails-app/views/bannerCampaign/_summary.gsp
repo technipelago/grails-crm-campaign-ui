@@ -2,7 +2,7 @@
 <h4>Bannerkampanj</h4>
 
 <p>
-    Kampanjen är ${bean.status.name.toLowerCase()}
+    Kampanjen är ${bean.active ? 'aktiv' : 'inaktiv'}
     <g:if test="${bean.parent}">och ingår i ${bean.parent}</g:if>
 </p>
 

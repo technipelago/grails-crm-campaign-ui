@@ -99,11 +99,9 @@
                                                                              type="datetime"/></dd>
                                         </g:if>
 
-                                        <g:if test="${crmCampaign?.status}">
-                                            <dt><g:message code="crmCampaign.status.label" default="Status"/></dt>
+                                        <dt><g:message code="crmCampaign.status.label" default="Status"/></dt>
 
-                                            <dd><g:fieldValue bean="${crmCampaign}" field="status"/></dd>
-                                        </g:if>
+                                        <dd>${crmCampaign.active ? 'Aktiv' : 'Inaktiv'}</dd>
                                     </dl>
                                 </div>
 
