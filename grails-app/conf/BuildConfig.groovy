@@ -45,11 +45,10 @@ grails.project.dependency.resolution = {
         compile ":decorator:1.1"
         compile ":ckeditor:4.5.4.0"
 
-        compile ":crm-ui-bootstrap:2.4.0"
-        compile ":crm-tags:2.4.0"
-        compile ":crm-content:2.4.1-SNAPSHOT"
-        compile ":crm-content-ui:2.4.1-SNAPSHOT"
-        compile ":crm-campaign:2.4.0-SNAPSHOT"
+        compile ":crm-campaign:2.4.0"
+        compile ":crm-content-ui:2.4.2"
+        compile ":crm-tags:2.4.1"
+        compile ":crm-ui-bootstrap:2.4.1"
 
         compile ":selection:0.9.8"
         runtime ":selection-repository:0.9.3"
