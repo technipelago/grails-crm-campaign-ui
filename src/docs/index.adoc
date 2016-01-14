@@ -36,7 +36,7 @@ This plugin provide  a Twitter Bootstrap based user interface for campaign manag
 
 == Changes
 
-2.4.0:: First public release
+2.4.1:: First public release
 
 == License
 
