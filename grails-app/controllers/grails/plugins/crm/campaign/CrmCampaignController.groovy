@@ -240,7 +240,7 @@ class CrmCampaignController {
         }
         if (request.post) {
             if (email) {
-                crmEmailCampaignService.createRecipients(crmCampaign, [email])
+                crmEmailCampaignService.createRecipients(crmCampaign, [[email: email]])
             } else {
                 flash.error = message(code: 'crmCampaignRecipient.email.blank.message', args: [message(code: 'crmCampaignRecipient.email.label', default: 'Campaign'), message(code: 'crmCampaignRecipient.label', default: 'Recipient')])
             }

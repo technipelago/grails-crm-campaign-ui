@@ -95,12 +95,12 @@
                 <td><g:formatDate type="datetime" style="short" date="${r.dateOpened}"/></td>
                 <td style="color: #990000;">
                     <g:if test="${r.reason}">
-                        ${StringUtils.abbreviate(r.reason, 500).encodeAsHTML()}
+                        ${StringUtils.abbreviate(r.reason, 120).encodeAsHTML()}
                     </g:if>
                 </td>
                 <td>
                     <g:link action="deleteRecipient" id="${r.id}" title="Ta bort mottagare"
-                            onclick="return confirm('Är du säker på att du vill ta bort mottagaren?')"><i
+                            onclick="return confirm('${message(code: 'crmCampaign.recipients.delete.confirm', default: 'Confirm delete recipient')}')"><i
                             class="icon-trash"></i></g:link>
                 </td>
             </tr>
