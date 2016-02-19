@@ -16,7 +16,6 @@ class CrmCampaignController {
     def selectionService
     def selectionRepositoryService
     def crmCampaignService
-    def crmEmailCampaignService
 
     def index() {
         // If any query parameters are specified in the URL, let them override the last query stored in session.
@@ -240,7 +239,11 @@ class CrmCampaignController {
         }
         if (request.post) {
             if (email) {
-                crmEmailCampaignService.createRecipients(crmCampaign, [[email: email]])
+                def result = event(for: 'crmCampaign', topic: 'addRecipient', data: [tenant: tenant, campaign: id, email: email]).waitFor(10000)?.value
+                if(!result) {
+                    result = [email: email]
+                }
+                crmCampaignService.createRecipients(crmCampaign, [result])
             } else {
                 flash.error = message(code: 'crmCampaignRecipient.email.blank.message', args: [message(code: 'crmCampaignRecipient.email.label', default: 'Campaign'), message(code: 'crmCampaignRecipient.label', default: 'Recipient')])
             }

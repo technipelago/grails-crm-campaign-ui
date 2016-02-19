@@ -13,7 +13,7 @@ class CrmCampaignTargetController {
     def crmCoreService
     def crmSecurityService
     def crmCampaignTargetService
-    def crmEmailCampaignService
+    def crmCampaignService
     def selectionRepositoryService
 
     def add(Long id, Long selection, Integer orderIndex, int operation) {
@@ -94,9 +94,14 @@ class CrmCampaignTargetController {
         try {
             def startTime = System.currentTimeMillis()
             def result = crmCampaignTargetService.select(crmCampaign, [:])
-            def recipients = result.collect{[email: it.email, ref: crmCoreService.getReferenceIdentifier(it)]}
-            // TODO include telephone? (for telemarketing campaigns)
-            def count = crmEmailCampaignService.createRecipients(crmCampaign, recipients)
+            def recipients = result.collect{
+                def model = event(for: 'crmCampaign', topic: 'addRecipient', data: [tenant: tenant, campaign: id, email: it.email]).waitFor(10000)?.value
+                if(!model) {
+                    model = [email: it.email, telephone: it.telephone, ref: crmCoreService.getReferenceIdentifier(it)]
+                }
+                return model
+            }
+            def count = crmCampaignService.createRecipients(crmCampaign, recipients)
             if (log.isDebugEnabled()) {
                 log.debug("Generating [${count}/${result.size()}] targets for campaign [${crmCampaign.ident()}] \"${crmCampaign}\" took ${System.currentTimeMillis() - startTime} ms")
             }
