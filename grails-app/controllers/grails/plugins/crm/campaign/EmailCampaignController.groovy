@@ -2,10 +2,11 @@ package grails.plugins.crm.campaign
 
 import grails.converters.JSON
 import grails.plugins.crm.content.CrmResourceRef
-import grails.plugins.crm.core.TenantUtils
 import grails.plugins.crm.core.SearchUtils
+import grails.plugins.crm.core.TenantUtils
 import grails.plugins.crm.core.WebUtils
 import grails.transaction.Transactional
+import org.apache.commons.io.FilenameUtils
 import org.apache.commons.lang.StringUtils
 
 import javax.servlet.http.HttpServletResponse
@@ -15,11 +16,16 @@ import javax.servlet.http.HttpServletResponse
  */
 class EmailCampaignController {
 
+    private static final String DEFAULT_PART = 'body'
+
+    static allowedMethods = [addPart: 'POST', delete: 'POST']
+
     def grailsApplication
     def emailCampaign
     def crmEmailCampaignService
     def crmCoreService
     def crmContentService
+    def crmFreeMarkerService
     def crmSecurityService
 
     private String getNewsletterUrl(CrmCampaign campaign) {
@@ -56,7 +62,7 @@ class EmailCampaignController {
         } else {
             stats.opened = 0
         }
-        if(stats.dateSent) {
+        if (stats.dateSent) {
             render template: "statistics", model: [bean: crmCampaign, recipients: count, cfg: cfg, stats: stats]
         } else {
             response.sendError(HttpServletResponse.SC_NO_CONTENT)
@@ -64,7 +70,7 @@ class EmailCampaignController {
     }
 
     @Transactional
-    def edit(Long id) {
+    def edit(Long id, Long part, Long next) {
 
         def crmCampaign = CrmCampaign.get(id)
         if (!crmCampaign) {
@@ -73,50 +79,141 @@ class EmailCampaignController {
             return
         }
 
-        def metadata = [:]
-        metadata.templates = getTemplates(crmCampaign)
+        def crmResourceRef
+        if (part) {
+            crmResourceRef = crmContentService.getResourceRef(part)
+            if (!crmResourceRef) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND)
+                return
+            }
+            if (crmResourceRef.reference.id != crmCampaign.id) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST)
+                return
+            }
+        } else {
+            crmResourceRef = crmEmailCampaignService.getPart(crmCampaign, DEFAULT_PART)
+            if (!crmResourceRef) {
+                crmResourceRef = crmEmailCampaignService.setPart(crmCampaign, DEFAULT_PART, '<p>&nbsp;</p>')
+            }
+        }
+
+        params._part = FilenameUtils.getBaseName(crmResourceRef.name)
 
         if (request.post) {
-            params.parts = params.list('parts')
             emailCampaign.configure(crmCampaign, params)
             if (crmCampaign.save()) {
-                flash.success = message(code: 'crmEmailCampaign.updated.message', args: [message(code: 'crmCampaign.label', default: 'Campaign'), crmCampaign.toString()])
-                redirect action: "edit", id: id
+                // Remove updated template from cache.
+                crmFreeMarkerService.removeFromCache("crmCampaign/${crmCampaign.id}/${crmResourceRef.name}")
+                //crmFreeMarkerService.clearCache()
+                if (params.boolean('preview')) {
+                    def result
+                    try {
+                        result = crmEmailCampaignService.render(crmCampaign, null, getPreviewModel(crmCampaign))
+                    } catch (Exception e) {
+                        result = "<pre>${e.message}</pre>"
+                    }
+                    render contentType: "text/html", text: result
+                } else if (next) {
+                    redirect action: 'edit', params: [id: crmCampaign.id, part: next]
+                } else {
+                    flash.success = message(code: 'crmEmailCampaign.updated.message', args: [message(code: 'crmCampaign.label', default: 'Campaign'), crmCampaign.toString()])
+                    redirect controller: 'crmCampaign', action: "show", id: id
+                }
             } else {
-                render view: "edit", model: [crmCampaign: crmCampaign, cfg: crmCampaign.configuration, url: getNewsletterUrl(crmCampaign), metadata: metadata]
+                def metadata = [:]
+                metadata.parts = getParts(crmCampaign)
+                metadata.templates = getTemplates(crmCampaign)
+
+                render view: "edit", model: [crmCampaign: crmCampaign, cfg: crmCampaign.configuration,
+                                             url        : getNewsletterUrl(crmCampaign), metadata: metadata,
+                                             part       : crmResourceRef]
             }
         } else {
             def user = crmSecurityService.currentUser
             def cfg = crmCampaign.configuration
-            if (!cfg.parts) {
-                cfg.parts = ['body']
-            }
-            if(!cfg.subject) {
+            if (!cfg.subject) {
                 cfg.subject = crmCampaign.toString()
             }
-            if(!cfg.sender) {
+            if (!cfg.sender) {
                 cfg.sender = user.email
             }
-            if(!cfg.senderName) {
+            if (!cfg.senderName) {
                 cfg.senderName = user.name
             }
-            return [crmCampaign: crmCampaign, cfg: cfg, url: getNewsletterUrl(crmCampaign), metadata: metadata]
+            def metadata = [:]
+            metadata.parts = getParts(crmCampaign)
+            metadata.templates = getTemplates(crmCampaign)
+
+            return [crmCampaign: crmCampaign, cfg: cfg,
+                    url        : getNewsletterUrl(crmCampaign), metadata: metadata,
+                    part       : crmResourceRef, content: crmResourceRef.text]
         }
     }
 
-    private List<Map<String, String>> getTemplates(final CrmCampaign crmCampaign) {
-        def path = grailsApplication.config.crm.campaign.email.template.path ?: "/epost"
-        def folder = crmContentService.getFolder(path)
-        folder ? folder.files.collect{[name:it.title, path: it.path.join('/')]} : []
+    private Map getPreviewModel(CrmCampaign campaign) {
+        def username = crmSecurityService.currentUser?.username
+        event(for: 'crmEmailCampaign', topic: 'previewModel', fork: false,
+                data: [tenant: campaign.tenantId, campaign: campaign.id, user: username]).waitFor(10000)?.value
+    }
+
+    @Transactional
+    def delete(Long id, Long part) {
+        def crmCampaign = CrmCampaign.get(id)
+        if (!crmCampaign) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND)
+            return
+        }
+
+        def crmResourceRef = crmContentService.getResourceRef(part)
+        if (!crmResourceRef) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND)
+            return
+        }
+        if (crmResourceRef.reference.id != crmCampaign.id) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST)
+            return
+        }
+
+        crmContentService.deleteReference(crmResourceRef)
+
+        redirect action: 'edit', id: id
+    }
+
+    // Parts attached to the campaign.
+    //
+    private List<CrmResourceRef> getParts(final CrmCampaign crmCampaign) {
+        crmContentService.findResourcesByReference(crmCampaign, [name: '*.html', sort: 'name', order: 'asc'])
+    }
+
+    // Global templates.
+    //
+    private List<CrmResourceRef> getTemplates(final CrmCampaign crmCampaign) {
+        def path = grailsApplication.config.crm.campaign.email.template.path ?: "/templates/email"
+        crmContentService.getFolder(path)?.files ?: []
+    }
+
+    @Transactional
+    def addPart(Long id) {
+        def crmCampaign = CrmCampaign.get(id)
+        if (!crmCampaign) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND)
+            return
+        }
+
+        def content = params.content ?: '<p>&nbsp;</p>'
+        def crmResourceRef = crmEmailCampaignService.setPart(crmCampaign, params.name ?: DEFAULT_PART, content)
+        def payload = [id: crmResourceRef.id, name: FilenameUtils.getBaseName(crmResourceRef.name), content: content]
+
+        render payload as JSON
     }
 
     def template(String path) {
-        if(! path) {
+        if (!path) {
             response.sendError(HttpServletResponse.SC_NO_CONTENT)
             return
         }
         def tmpl = crmContentService.getContentByPath(path)
-        if(! tmpl) {
+        if (!tmpl) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND)
             return
         }
@@ -153,32 +250,4 @@ class EmailCampaignController {
         render result as JSON
     }
 
-    def preview(Long id) {
-        def crmCampaign = CrmCampaign.read(id)
-        if (!crmCampaign) {
-            flash.error = message(code: 'crmCampaign.not.found.message', args: [message(code: 'crmCampaign.label', default: 'Campaign'), id])
-            redirect(controller: "crmCampaign", action: "index")
-            return
-        }
-        if (request.post) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (crmCampaign.version > version) {
-                    crmCampaign.errors.rejectValue('version', 'crmCampaign.optimistic.locking.failure',
-                            [message(code: 'crmCampaign.label', default: 'Email Campaign')] as Object[],
-                            "Another user has updated this email campaign while you were editing")
-                    render view: "edit", model: [crmCampaign: crmCampaign, cfg: crmCampaign.configuration, url: getNewsletterUrl(crmCampaign)]
-                    return
-                }
-            }
-            params.parts = params.list('parts')
-            params.preview = true // This avoids the hyperlink scanning.
-            emailCampaign.configure(crmCampaign, params)
-            if (!crmCampaign.validate()) {
-                render view: "edit", model: [crmCampaign: crmCampaign, cfg: crmCampaign.configuration, url: getNewsletterUrl(crmCampaign)]
-                return
-            }
-        }
-        render contentType: "text/html", text: crmEmailCampaignService.render(crmCampaign)
-    }
 }

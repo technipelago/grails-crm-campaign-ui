@@ -1,3 +1,4 @@
+<%@ page import="org.apache.commons.io.FilenameUtils" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,6 +21,13 @@
                 });
             return editor;
             },
+
+            addPart: function() {
+                $.post("${createLink(action: 'edit')}", $('#mainForm').serialize(), function(data) {
+                    $('#addPartModal').modal('show');
+                });
+            },
+
             applyTemplate: function(oldHtml, newHtml) {
                 var $oldDocument = $(oldHtml);
                 var $newDocument = $(newHtml);
@@ -36,7 +44,7 @@
                         $newContent.html($oldContent.html());
                     }
                 });
-                return $('<div>').append($newDocument).html();
+                return $('<div/>').append($newDocument).html();
             }
         };
 
@@ -44,8 +52,55 @@
 
             CRM.createEditor("bodycontent");
 
-            $("#templates a").click(function(e) {
-                e.preventDefault();
+            $('.crm-preview').click(function(ev) {
+                ev.preventDefault();
+                $('#bodycontent').val(CKEDITOR.instances.bodycontent.getData());
+                var data = $('#mainForm').serialize() + '&preview=true';
+                $.post("${createLink(action: 'edit')}", data, function(html) {
+                    $('#preview-container').html(html);
+                    $('#previewModal').modal('show');
+                });
+            });
+
+            $('.crm-part').click(function(ev) {
+                var id = $(this).data('crm-id');
+                $('input[name="next"]').val(id);
+            });
+
+            $('.crm-add').click(function(ev) {
+                ev.preventDefault();
+                CRM.addPart();
+            });
+
+            $('.crm-delete').click(function(ev) {
+                ev.preventDefault();
+                var part = $(this).data('crm-id');
+                if(confirm('Are you sure you want to delete the part?')) {
+                    $.post("${createLink(action: 'delete')}", {id: "${crmCampaign.id}", part: part}, function(response) {
+                        window.location.href = "${createLink(action: 'edit', id: crmCampaign.id)}";
+                    });
+                }
+            });
+
+            $('#addPartModal form').submit(function(ev) {
+                ev.preventDefault();
+                var data = $(this).serialize();
+                $.post("${createLink(action: 'addPart')}", data, function(response) {
+                    window.location.href = "${createLink(action: 'edit', id: crmCampaign.id)}?part=" + response.id;
+                });
+            });
+
+            $('#addPartModal').on('shown', function () {
+                $('input:visible:first', $(this)).focus();
+            });
+
+            $('#previewModal').on('hidden', function () {
+                $('#preview-container').empty();
+                CKEDITOR.instances.bodycontent.focus();
+            });
+
+            $("#templates a").click(function(ev) {
+                ev.preventDefault();
                 if(confirm("${message(code: 'emailCampaign.template.change.confirm')} " + $(this).text())) {
                     var path = $(this).attr('href');
                     $.getJSON("${createLink(action: 'template')}", {path: path}, function(data) {
@@ -55,6 +110,12 @@
             });
         });
     </r:script>
+    <style type="text/css">
+    #previewModal {
+        width: 800px;
+        margin-left: -370px; /* must be half of the width, minus scrollbar on the left (30px) */
+    }
+    </style>
 </head>
 
 <body>
@@ -72,10 +133,12 @@
     </crm:alert>
 </g:hasErrors>
 
-<g:form name="mainForm">
+<g:form name="mainForm" action="edit">
 
     <g:hiddenField name="id" value="${crmCampaign.id}"/>
     <g:hiddenField name="version" value="${crmCampaign.version}"/>
+    <g:hiddenField name="part" value="${part.id}"/>
+    <g:hiddenField name="next" value=""/>
 
     <div class="row-fluid">
         <div class="span4">
@@ -116,34 +179,106 @@
     </div>
 
     <div class="row-fluid">
-        <input type="hidden" name="parts" value="body"/>
-        <g:textArea id="bodycontent" name="body" value="${cfg.body}" cols="70" rows="18"
+        <g:textArea id="bodycontent" name="content" value="${content}" cols="70" rows="18"
                     class="span11 crm-editor-html"/>
     </div>
 
-    <div class="form-actions btn-toolbar">
+    <div class="form-actions">
         <crm:button action="edit" visual="warning" icon="icon-ok icon-white" label="crmCampaign.button.save.label"/>
-        <crm:button action="preview" visual="info" icon="icon-eye-open icon-white"
-                    label="emailCampaign.button.preview.label"/>
-        <g:if test="${metadata.templates}">
+
+        <a href="#" class="btn btn-info crm-preview">
+            <i class="icon-eye-open icon-white"></i>
+            <g:message code="emailCampaign.button.preview.label"/>
+        </a>
+
+        <g:each in="${metadata.parts}" var="p">
             <div class="btn-group">
-                <a class="btn btn-success dropdown-toggle" data-toggle="dropdown" href="#">
-                    <i class="icon-file icon-white"></i>
-                    Välj mall
+                <button type="submit" data-crm-id="${p.id}" class="btn btn-${p.id == part.id ? 'success' : 'info'} crm-part">
+                    <i class="icon-th-large icon-white"></i>
+                    ${FilenameUtils.getBaseName(p.name)}
+                </button>
+                <button class="btn btn-${p.id == part.id ? 'success' : 'info'} dropdown-toggle" data-toggle="dropdown">
                     <span class="caret"></span>
-                </a>
-                <ul class="dropdown-menu" id="templates">
-                    <g:each in="${metadata.templates}" var="t">
-                        <li><a href="${t.path}">${t.name.encodeAsHTML()}</a></li>
-                    </g:each>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a href="#" class="crm-rename" data-crm-id="${p.id}">Redigera</a></li>
+                    <li><a href="#" class="crm-delete" data-crm-id="${p.id}">Ta bort del</a></li>
+                    <li><a href="#" class="crm-add">Lägg till del</a></li>
                 </ul>
             </div>
-        </g:if>
+        </g:each>
         <crm:button type="link" controller="crmCampaign" action="show" id="${crmCampaign.id}" icon="icon-remove"
                     label="crmCampaign.button.close.label"/>
     </div>
 
 </g:form>
+
+<div id="addPartModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true">
+    <g:form action="addPart">
+        <input type="hidden" name="id" value="${crmCampaign.id}"/>
+
+        <div class="modal-header">
+            <a class="close" data-dismiss="modal" aria-hidden="true">×</a>
+
+            <h3 id="myModalLabel">Lägg till del</h3>
+        </div>
+
+        <div class="modal-body">
+            <div class="row-fluid">
+                <div class="control-group">
+                    <label class="control-label">Namn</label>
+
+                    <div class="controls">
+                        <g:textField name="name" value="" class="span6"/>
+                    </div>
+                </div>
+                <g:if test="${metadata.templates}">
+                    <div class="control-group">
+                        <label class="control-label">Mall</label>
+
+                        <div class="controls">
+                            <g:select name="template" from="${metadata.templates}" optionKey="id" optionValue="title" class="span6"/>
+                        </div>
+                    </div>
+                </g:if>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-success">
+                <i class="icon-ok icon-white"></i>
+                Spara
+            </button>
+            <a href="#" class="btn" data-dismiss="modal">
+                <i class="icon-remove"></i>
+                <g:message code="crmEmailCampaign.button.close.label" default="Close"/>
+            </a>
+        </div>
+    </g:form>
+</div>
+
+<div id="previewModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="previewModalLabel" aria-hidden="true">
+
+    <div class="modal-header">
+        <a class="close" data-dismiss="modal" aria-hidden="true">×</a>
+
+        <h3 id="previewModalLabel">${crmCampaign.name}</h3>
+    </div>
+
+    <div class="modal-body">
+        <div class="row-fluid">
+            <div id="preview-container"></div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <a href="#" class="btn" data-dismiss="modal">
+            <i class="icon-ok"></i>
+            <g:message code="crmEmailCampaign.button.close.label" default="Close"/>
+        </a>
+    </div>
+</div>
 
 </body>
 </html>
