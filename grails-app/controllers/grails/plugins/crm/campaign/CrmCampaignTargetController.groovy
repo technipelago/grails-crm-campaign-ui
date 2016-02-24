@@ -92,6 +92,7 @@ class CrmCampaignTargetController {
             return
         }
         try {
+            // TODO DO THIS IN BACKGROUND!
             def startTime = System.currentTimeMillis()
             def result = crmCampaignTargetService.select(crmCampaign, [:])
             def recipients = result.collect{
@@ -110,7 +111,7 @@ class CrmCampaignTargetController {
             log.error "Failed to create recipients for campaign [${id}]", e
             flash.error = message(code: 'crmCampaign.target.create.error', default: "Could not create target group", args: [e.message])
         }
-        redirect controller: "crmCampaign", action: "show", id: id, fragment: "target"
+        redirect controller: "crmCampaign", action: "show", id: id, fragment: "recipients"
     }
 
     def count(Long id) {

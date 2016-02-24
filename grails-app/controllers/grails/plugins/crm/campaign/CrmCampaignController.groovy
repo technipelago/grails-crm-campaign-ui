@@ -3,6 +3,7 @@ package grails.plugins.crm.campaign
 import grails.plugins.crm.core.DateUtils
 import grails.plugins.crm.core.TenantUtils
 import grails.plugins.crm.core.WebUtils
+import grails.transaction.Transactional
 import org.springframework.dao.DataIntegrityViolationException
 
 import javax.servlet.http.HttpServletResponse
@@ -240,14 +241,14 @@ class CrmCampaignController {
         if (request.post) {
             if (email) {
                 def result = event(for: 'crmCampaign', topic: 'addRecipient', data: [tenant: tenant, campaign: id, email: email]).waitFor(10000)?.value
-                if(!result) {
+                if (!result) {
                     result = [email: email]
                 }
                 crmCampaignService.createRecipients(crmCampaign, [result])
             } else {
                 flash.error = message(code: 'crmCampaignRecipient.email.blank.message', args: [message(code: 'crmCampaignRecipient.email.label', default: 'Campaign'), message(code: 'crmCampaignRecipient.label', default: 'Recipient')])
             }
-            redirect action: "recipients", id: id
+            redirect action: "show", id: id, fragment: 'recipients'
         } else {
             if (!params.max) {
                 params.max = 10
@@ -257,12 +258,12 @@ class CrmCampaignController {
             }
             def recipients = CrmCampaignRecipient.createCriteria().list(params) {
                 eq('campaign', crmCampaign)
+                if (params.q) {
+                    ilike('email', '%' + params.q + '%')
+                }
             }
-            def hitCount = CrmCampaignRecipient.createCriteria().count() {
-                eq('campaign', crmCampaign)
-                isNotNull('dateOpened')
-            }
-            [crmCampaign: crmCampaign, recipients: recipients, totalCount: recipients.totalCount, hitCount: hitCount]
+            WebUtils.shortCache(response)
+            render template: 'recipients_list', model: [bean: crmCampaign, result: recipients, totalCount: recipients.totalCount]
         }
     }
 
@@ -284,25 +285,29 @@ class CrmCampaignController {
         render template: "recipient", model: [recipient: crmCampaignRecipient, reference: reference]
     }
 
+    @Transactional
     def deleteRecipient(Long id) {
         def tenant = TenantUtils.tenant
-        def crmCampaignRecipient = CrmCampaignRecipient.get(id)
-        if (!crmCampaignRecipient) {
-            flash.error = message(code: 'crmCampaignRecipient.not.found.message', args: [message(code: 'crmCampaignRecipient.label', default: 'Recipient'), id])
+        def crmCampaign = CrmCampaign.findByIdAndTenantId(id, tenant)
+        if (!crmCampaign) {
+            flash.error = message(code: 'crmCampaign.not.found.message', args: [message(code: 'crmCampaign.label', default: 'Campaign'), id])
             redirect(action: "index")
             return
         }
-        def crmCampaign = crmCampaignRecipient.campaign
-        if (crmCampaign?.tenantId != tenant) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN)
-            return
+
+        List<Long> recipients = params.list('recipients').collect { Long.valueOf(it) }
+        def result = recipients ? CrmCampaignRecipient.createCriteria().list() {
+            eq('campaign', crmCampaign)
+            inList('id', recipients)
+        } : []
+        def tombstone = "${result.size()}"
+
+        for (r in result) {
+            r.delete()
         }
-        def tombstone = crmCampaignRecipient.toString()
-        CrmCampaignRecipient.withTransaction {
-            crmCampaignRecipient.delete()
-        }
+
         flash.warning = message(code: 'crmCampaignRecipient.deleted.message', args: [message(code: 'crmCampaignRecipient.label', default: 'Recipient'), tombstone])
-        redirect action: "recipients", id: crmCampaign.id
+        redirect action: "show", id: id, fragment: 'recipients'
     }
 
     def copy(Long id) {

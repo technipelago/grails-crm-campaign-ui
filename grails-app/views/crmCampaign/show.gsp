@@ -22,6 +22,43 @@
         <% } %>
         });
     </r:script>
+    <style type="text/css">
+    tr.crm-opened td {
+        color: #009900;
+        background-color: #eeffee;
+    }
+
+    tr.crm-optout td {
+        color: #999999;
+        text-decoration: line-through;
+    }
+
+    tr.crm-error td {
+        color: #990000;
+        background-color: #ffe0e0;
+    }
+
+    tr.selected td {
+        background-color: #f9ccff !important;
+    }
+
+    tr.crm-recipient i {
+        margin-right: 5px;
+    }
+
+    tr.crm-recipient i:last-child {
+        margin-right: 0;
+    }
+
+    .crm-search input {
+        margin-bottom: 0;
+        padding: 1px 4px;
+    }
+
+    .crm-search input.hide {
+        display: none !important;
+    }
+    </style>
 </head>
 
 <body>
@@ -48,13 +85,17 @@
             <ul class="nav nav-tabs">
                 <li class="active"><a href="#main" data-toggle="tab"><g:message code="crmCampaign.tab.main.label"/></a>
                 </li>
+                <li><a href="#target" data-toggle="tab"><g:message
+                        code="crmCampaign.tab.target.label"/><crm:countIndicator
+                        count="${crmCampaign.target.size()}"/></a>
+                </li>
+                <li><a href="#recipients" data-toggle="tab"><g:message
+                        code="crmCampaign.tab.recipients.label"/><crm:countIndicator
+                        count="${recipientsCount}"/></a>
+                </li>
                 <li><a href="#children" data-toggle="tab"><g:message
                         code="crmCampaign.tab.children.label"/><crm:countIndicator
                         count="${crmCampaign.children.size()}"/></a>
-                </li>
-                <li><a href="#target" data-toggle="tab"><g:message
-                        code="crmCampaign.tab.target.label"/><crm:countIndicator
-                        count="${recipientsCount}"/></a>
                 </li>
                 <crm:pluginViews location="tabs" var="view">
                     <crm:pluginTab id="${view.id}" label="${view.label}" count="${view.model?.totalCount}"/>
@@ -182,12 +223,16 @@
 
                 </div>
 
-                <div class="tab-pane" id="children">
-                    <tmpl:children bean="${crmCampaign}" list="${crmCampaign.children}"/>
-                </div>
-
                 <div class="tab-pane" id="target">
                     <tmpl:target bean="${crmCampaign}" list="${crmCampaign.target}"/>
+                </div>
+
+                <div class="tab-pane" id="recipients">
+                    <tmpl:recipients bean="${crmCampaign}"/>
+                </div>
+
+                <div class="tab-pane" id="children">
+                    <tmpl:children bean="${crmCampaign}" list="${crmCampaign.children}"/>
                 </div>
 
                 <crm:pluginViews location="tabs" var="view">
