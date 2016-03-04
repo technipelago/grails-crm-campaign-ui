@@ -1,6 +1,7 @@
 <%@ page import="org.apache.commons.lang.StringUtils" %>
 <g:each in="${result}" var="r">
-    <tr class="crm-recipient ${r.dateOptOut ? 'crm-optout' : (r.reason ? 'crm-error' : (r.dateOpened ? 'crm-opened' : ''))}">
+    <tr class="crm-recipient ${r.dateOptOut ? 'crm-optout' : (r.reason ? 'crm-error' : (r.dateOpened ? 'crm-opened' : ''))}"
+        data-crm-total="${totalCount}" data-crm-offset="${params.offset ?: 0}" data-crm-max="${params.max ?: 25}">
 
         <td>
             <g:link action="showRecipient" id="${r.id}" class="crm-info">
