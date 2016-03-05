@@ -131,6 +131,10 @@ class EmailCampaignController {
         } else {
             def user = crmSecurityService.currentUser
             def cfg = crmCampaign.configuration
+            if(cfg.parts) {
+                cfg = emailCampaign.migrate(crmCampaign)
+                crmCampaign.save()
+            }
             if (!cfg.subject) {
                 cfg.subject = crmCampaign.toString()
             }
