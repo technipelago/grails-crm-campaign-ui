@@ -1,6 +1,7 @@
 package grails.plugins.crm.campaign
 
 import grails.plugins.crm.core.TenantUtils
+import grails.transaction.Transactional
 import org.springframework.dao.DataIntegrityViolationException
 
 /**
@@ -16,6 +17,7 @@ class CrmCampaignTargetController {
     def crmCampaignService
     def selectionRepositoryService
 
+    @Transactional
     def add(Long id, Long selection, Integer orderIndex, int operation) {
         def tenant = TenantUtils.tenant
         def crmCampaign = CrmCampaign.findByIdAndTenantId(id, tenant)
@@ -44,6 +46,7 @@ class CrmCampaignTargetController {
         redirect controller: "crmCampaign", action: "show", id: id, fragment: "target"
     }
 
+    @Transactional
     def delete(Long id) {
         def target = CrmCampaignTarget.createCriteria().get() {
             campaign {

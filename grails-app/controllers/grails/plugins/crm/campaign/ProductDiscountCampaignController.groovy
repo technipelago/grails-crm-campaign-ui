@@ -1,5 +1,7 @@
 package grails.plugins.crm.campaign
 
+import grails.transaction.Transactional
+
 import javax.servlet.http.HttpServletResponse
 import grails.plugins.crm.core.TenantUtils
 
@@ -20,6 +22,7 @@ class ProductDiscountCampaignController {
         render ''
     }
 
+    @Transactional
     def edit(Long id) {
         def crmCampaign = CrmCampaign.get(id)
         if (!crmCampaign) {
