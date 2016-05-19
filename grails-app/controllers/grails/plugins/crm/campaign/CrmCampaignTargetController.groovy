@@ -99,9 +99,11 @@ class CrmCampaignTargetController {
             def startTime = System.currentTimeMillis()
             def result = crmCampaignTargetService.select(crmCampaign, [:])
             def recipients = result.collect{
-                def model = event(for: 'crmCampaign', topic: 'addRecipient', data: [tenant: tenant, campaign: id, email: it.email]).waitFor(10000)?.value
+                def model = event(for: 'crmCampaign', topic: 'addRecipient',
+                        data: [tenant: tenant, campaign: id, email: it.email, name: it.name, telephone: it.telephone])
+                        .waitFor(10000)?.value
                 if(!model) {
-                    model = [email: it.email, telephone: it.telephone, ref: crmCoreService.getReferenceIdentifier(it)]
+                    model = [email: it.email, name: it.name, telephone: it.telephone, ref: crmCoreService.getReferenceIdentifier(it)]
                 }
                 return model
             }

@@ -7,8 +7,8 @@
 </p>
 
 <p>
-    Utskickets rubrik är <strong>${cfg.subject}</strong>
-    och avsändare är <strong>${cfg.senderName} &lt;${cfg.sender}&gt;</strong>.
+    Utskickets rubrik är <strong>${StringUtils.abbreviate(cfg.subject, 40)}</strong>
+    och avsändare är <strong>${StringUtils.abbreviate(cfg.sender, 20)}</strong>.
 </p>
 
 <g:if test="${recipients}">

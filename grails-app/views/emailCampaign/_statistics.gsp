@@ -1,18 +1,6 @@
 <%@ page import="org.apache.commons.lang.StringUtils" defaultCodec="html" %>
 
-<h4>Statistik</h4>
-
 <g:if test="${stats.dateSent}">
-
-    ${stats.dateOpened} st (${stats.opened}%) mottagare öppnade meddelandet.
-
-    <div id="chart"></div>
-
-    <style type="text/css">
-    #chart {
-        text-align: center;
-    }
-    </style>
 
     <script type="application/javascript">
 
@@ -61,4 +49,30 @@
                 });
     </script>
 
+    <style type="text/css">
+    #chart {
+        text-align: center;
+    }
+    </style>
+
+    <ul class="nav nav-sidebar">
+
+        <li class="nav-header">
+            <i class="icon-signal"></i>
+            Statistik
+        </li>
+
+        <li style="margin-left: 15px;">${stats.dateOpened} st (${stats.opened}%) mottagare öppnade meddelandet.</li>
+    </ul>
+
+    <div id="chart"></div>
 </g:if>
+<g:else>
+    <ul class="nav nav-sidebar">
+
+        <li class="nav-header">
+            <i class="icon-signal"></i>
+            Statistik
+        </li>
+    </ul>
+</g:else>

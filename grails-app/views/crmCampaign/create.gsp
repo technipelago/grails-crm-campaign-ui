@@ -62,18 +62,16 @@
                         <label class="control-label"><g:message code="crmCampaign.startTime.label"/></label>
 
                         <div class="controls">
-                            <span id="startDateContainer" class="input-append date"
-                                  data-date="${formatDate(format: 'yyyy-MM-dd', date: crmCampaign.startTime ?: new Date())}">
+                            <span id="startDateContainer" class="input-append date">
                                 <g:textField name="startDate" class="span10" size="10"
                                              placeholder="ÅÅÅÅ-MM-DD"
                                              value="${formatDate(format: 'yyyy-MM-dd', date: crmCampaign.startTime)}"/><span
                                     class="add-on"><i class="icon-th"></i></span>
                             </span>
-                            <%--
-                                                        <g:select name="startTime" from="${timeList}"
-                                                                  value="${formatDate(format: 'HH:mm', date: crmCampaign.startTime)}"
-                                                                  class="span4"/>
-                            --%>
+
+                            <g:select name="startTime" from="${timeList}"
+                                      value="${formatDate(format: 'HH:mm', date: crmCampaign.startTime)}"
+                                      noSelection="${['': '']}" class="span4"/>
                         </div>
                     </div>
 
@@ -81,17 +79,15 @@
                         <label class="control-label"><g:message code="crmCampaign.endTime.label"/></label>
 
                         <div class="controls">
-                            <span id="endDateContainer" class="input-append date"
-                                  data-date="${formatDate(format: 'yyyy-MM-dd', date: crmCampaign.endTime ?: new Date())}">
+                            <span id="endDateContainer" class="input-append date">
                                 <g:textField name="endDate" class="span10" size="10" placeholder="ÅÅÅÅ-MM-DD"
                                              value="${formatDate(format: 'yyyy-MM-dd', date: crmCampaign.endTime)}"/><span
                                     class="add-on"><i class="icon-th"></i></span>
                             </span>
-                            <%--
-                                                        <g:select name="endTime" from="${timeList}"
-                                                                  value="${formatDate(format: 'HH:mm', date: crmCampaign.endTime)}"
-                                                                  class="span4"/>
-                            --%>
+
+                            <g:select name="endTime" from="${timeList}"
+                                      value="${formatDate(format: 'HH:mm', date: crmCampaign.endTime)}"
+                                      noSelection="${['': '']}" class="span4"/>
                         </div>
                     </div>
 

@@ -159,7 +159,7 @@
             <tr>
                 <th class="crm-search">
                     <label>
-                        <g:message code="crmCampaignRecipient.email.label" default="Name"/>
+                        <g:message code="crmCampaignRecipient.name.label" default="Name"/>
                         <i class="icon-search"></i>
                     </label>
                     <input type="text" name="q" maxlength="80" class="hide"/>
@@ -257,6 +257,24 @@
 
                 <div class="controls">
                     <g:textField name="email" class="span11"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">
+                    <g:message code="crmCampaignRecipient.telephone.label" default="Phone"/>
+                </label>
+
+                <div class="controls">
+                    <g:textField name="telephone" class="span6"/>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">
+                    <g:message code="crmCampaignRecipient.name.label" default="Name"/>
+                </label>
+
+                <div class="controls">
+                    <g:textField name="name" class="span11"/>
                 </div>
             </div>
         </div>

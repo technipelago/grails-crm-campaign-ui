@@ -1,5 +1,6 @@
 package grails.plugins.crm.campaign
 
+import grails.converters.JSON
 import grails.plugins.crm.core.DateUtils
 import grails.plugins.crm.core.TenantUtils
 import grails.plugins.crm.core.WebUtils
@@ -99,9 +100,10 @@ class CrmCampaignController {
                 list << String.format("%02d:%02d", h, it * 15)
             }; list
         }
-        def parentList = CrmCampaign.findAllByTenantId(tenant)
+        timeList << '23:59' // So a campaign can end at midnight.
 
-        bindData(crmCampaign, params, [include: CrmCampaign.BIND_WHITELIST])
+        def parentList = CrmCampaign.findAllByTenantId(tenant)
+        bindData(crmCampaign, params, [include: CrmCampaign.BIND_WHITELIST, exclude: ['startTime', 'endTime']])
         crmCampaign.handlerName = params.handlerName
 
         def startDate = params.startDate
@@ -140,6 +142,21 @@ class CrmCampaignController {
                 list << String.format("%02d:%02d", h, it * 15)
             }; list
         }
+        timeList << '23:59' // So a campaign can end at midnight.
+        if (crmCampaign.startTime) {
+            def hm = crmCampaign.startTime.format("HH:mm")
+            if (!timeList.contains(hm)) {
+                timeList << hm
+            }
+        }
+        if (crmCampaign.endTime) {
+            def hm = crmCampaign.endTime.format("HH:mm")
+            if (!timeList.contains(hm)) {
+                timeList << hm
+            }
+        }
+        timeList = timeList.sort()
+
         def parentList = CrmCampaign.findAllByTenantId(tenant)
         def campaignTypes = crmCampaignService.getEnabledCampaignHandlers()
         switch (request.method) {
@@ -156,7 +173,7 @@ class CrmCampaignController {
                     }
                 }
 
-                bindData(crmCampaign, params, [include: CrmCampaign.BIND_WHITELIST])
+                bindData(crmCampaign, params, [include: CrmCampaign.BIND_WHITELIST, exclude: ['startTime', 'endTime']])
                 // Update old campaign that has no handler.
                 if (params.handlerName && !crmCampaign.handlerName) {
                     crmCampaign.handlerName = params.handlerName
@@ -230,7 +247,33 @@ class CrmCampaignController {
         }
     }
 
-    def recipients(Long id, String email) {
+    def addRecipient(Long id, String ref) {
+        def tenant = TenantUtils.tenant
+        def crmCampaign = CrmCampaign.findByIdAndTenantId(id, tenant)
+        if (!crmCampaign) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND)
+            return
+        }
+        def instance = crmCoreService.getReference(ref)
+        if (!instance) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND)
+            return
+        }
+        def result = event(for: 'crmCampaign', topic: 'addRecipient',
+                data: [tenant: tenant, campaign: id, name: instance.name, email: instance.email, telephone: instance.telephone ?: instance.mobile])
+                .waitFor(10000)?.value
+        if (!result) {
+            result = [name: instance.name, email: instance.email, telephone: instance.telephone ?: instance.mobile]
+        }
+        int numAdded = crmCampaignService.createRecipients(crmCampaign, [result])
+
+        def rval = crmCampaign.dao
+        rval.added = numAdded
+        rval.included = crmCampaign.contains(instance.email, instance.telephone ?: instance.mobile)
+        render rval as JSON
+    }
+
+    def recipients(Long id, String name, String email, String telephone) {
         def tenant = TenantUtils.tenant
         def crmCampaign = CrmCampaign.findByIdAndTenantId(id, tenant)
         if (!crmCampaign) {
@@ -240,9 +283,11 @@ class CrmCampaignController {
         }
         if (request.post) {
             if (email) {
-                def result = event(for: 'crmCampaign', topic: 'addRecipient', data: [tenant: tenant, campaign: id, email: email]).waitFor(10000)?.value
+                def result = event(for: 'crmCampaign', topic: 'addRecipient',
+                        data: [tenant: tenant, campaign: id, name: name, email: email, telephone: telephone])
+                        .waitFor(10000)?.value
                 if (!result) {
-                    result = [email: email]
+                    result = [name: name, email: email, telephone: telephone]
                 }
                 crmCampaignService.createRecipients(crmCampaign, [result])
             } else {
@@ -259,7 +304,12 @@ class CrmCampaignController {
             def recipients = CrmCampaignRecipient.createCriteria().list(params) {
                 eq('campaign', crmCampaign)
                 if (params.q) {
-                    ilike('email', '%' + params.q + '%')
+                    String queryValue = '%' + params.q + '%'
+                    or {
+                        ilike('name', queryValue)
+                        ilike('email', queryValue)
+                        ilike('telephone', queryValue)
+                    }
                 }
             }
             WebUtils.shortCache(response)
@@ -281,8 +331,34 @@ class CrmCampaignController {
             return
         }
         def reference = crmCampaignRecipient.ref ? crmCoreService.getReference(crmCampaignRecipient.ref) : null
+        def model = [recipient: crmCampaignRecipient, reference: reference]
+        def previousCampaigns = [] as Set
+        if (crmCampaignRecipient.email) {
+            def result = CrmCampaignRecipient.createCriteria().list() {
+                ne('id', crmCampaignRecipient.id)
+                ilike('email', crmCampaignRecipient.email)
+            }
+            if (result) {
+                previousCampaigns.addAll(result*.campaignId)
+            }
+        }
+        if (crmCampaignRecipient.telephone) {
+            def result = CrmCampaignRecipient.createCriteria().list() {
+                ne('id', crmCampaignRecipient.id)
+                ilike('telephone', crmCampaignRecipient.telephone)
+            }
+            if (result) {
+                previousCampaigns.addAll(result*.campaignId)
+            }
+        }
+        if (previousCampaigns) {
+            previousCampaigns.remove(crmCampaign.id) // Don't show the current campaign.
+            model.campaigns = CrmCampaign.createCriteria().list([sort: 'startTime', order: 'desc']) {
+                inList('id', previousCampaigns)
+            }
+        }
         WebUtils.shortCache(response)
-        render template: "recipient", model: [recipient: crmCampaignRecipient, reference: reference]
+        render template: "recipient", model: model
     }
 
     @Transactional
