@@ -233,6 +233,10 @@ class CrmCampaignController {
         [crmCampaign: crmCampaign, recipientsCount: count, availableSelections: selections]
     }
 
+    def paginate() {
+        render template: 'paginate', model: params
+    }
+
     private void bindDate(CrmCampaign target, String property, String value, TimeZone timezone = null) {
         if (value) {
             try {

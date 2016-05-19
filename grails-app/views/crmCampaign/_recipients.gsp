@@ -6,6 +6,15 @@
         timer = setTimeout(callback, ms);
       };
     })();
+    function getParameterByName(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
     var CRM = {
         sort: '${recipientSort}',
         order: 'asc',
@@ -31,56 +40,21 @@
                     }
                     var offset = $firstRow.data('crm-offset');
                     var max = $firstRow.data('crm-max');
-                    var pages = Math.ceil(totalCount / max);
-                    var $ul = $('<ul/>');
 
-                    // Prev button.
-                    var $li = $('<li><a href="#">&laquo;</a></li>');
-                    if(offset <= 0) {
-                        $li.addClass('disabled');
-                    } else {
-                        $('a', $li).click(function(ev) {
-                            ev.preventDefault();
-                            $(this).html($('#spinner').clone());
-                            CRM.offset = CRM.offset - CRM.max;
-                            CRM.load();
-                        });
-                    }
-                    $ul.append($li);
-
-                    for(page = 0; page < pages; page++) {
-                        var $a = $('<a href="#"/>');
-                        $a.text(page + 1);
-                        $a.data('crm-offset', page * CRM.max);
-                        $li = $('<li/>');
-                        $li.append($a);
-                        $a.click(function(ev) {
-                            ev.preventDefault();
-                            $(this).html($('#spinner').clone());
-                            CRM.offset = $(this).data('crm-offset');
-                            CRM.load();
-                        });
-                        if((page * CRM.max) == CRM.offset) {
-                            $li.addClass('active');
+                    // Lazy serverside pagination hack. TODO Rewrite pagination logic in JS.
+                    $('#pagination').load("${createLink(action: 'paginate')}",
+                        {
+                            totalCount: totalCount,
+                            offset: offset,
+                            max: max,
+                            controller: "${controllerName}",
+                            action: "show",
+                            id: <%= params.id %>
+                        },
+                        function(data) {
+                            CRM.bindPagination();
                         }
-                        $ul.append($li);
-                    }
-
-                    // Next button.
-                    $li = $('<li><a href="#">&raquo;</a></li>');
-                    if(offset >= ((pages - 1) * CRM.max)) {
-                        $li.addClass('disabled');
-                    } else {
-                        $('a', $li).click(function(ev) {
-                            ev.preventDefault();
-                            $(this).html($('#spinner').clone());
-                            CRM.offset = CRM.offset + CRM.max;
-                            CRM.load();
-                        });
-                    }
-                    $ul.append($li);
-
-                    $('#pagination').html($ul);
+                    );
                 }
             });
         },
@@ -93,6 +67,14 @@
                     $("#recipient-modal").modal('show');
                 });
                 return false;
+            });
+        },
+
+        bindPagination: function() {
+            $('#pagination a').click(function(ev) {
+                ev.preventDefault();
+                CRM.offset = getParameterByName('offset', $(this).attr('href'));
+                CRM.load();
             });
         }
 
@@ -195,7 +177,7 @@
             </tbody>
         </table>
 
-        <div id="pagination" class="pagination${count > 500 ? ' pagination-mini' : ''}"></div>
+        <div id="pagination"></div>
 
         <div class="form-actions">
 

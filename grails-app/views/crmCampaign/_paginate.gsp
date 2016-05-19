@@ -1,0 +1,1 @@
+<crm:paginate total="${totalCount}" offset="${offset}" max="${max}" controller="crmCampaign" action="show" fragment="recipients"/>
