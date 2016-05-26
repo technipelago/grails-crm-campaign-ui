@@ -25,6 +25,7 @@ It contains a Twitter Bootstrap based user interface for campaign management.
         def crmCoreService = applicationContext.crmCoreService
         def crmContentService = applicationContext.crmContentService
         boolean uploadMultipleFiles = application.config.crm.content.upload.multiple ?: false
+        String status = application.config.crm.campaign.content.status ?: 'shared'
 
         if (!crmPluginService.hasView('crmCampaign', 'show', 'tabs', [id: 'documents'])) {
             // crmCampaign:show << documents
@@ -32,7 +33,7 @@ It contains a Twitter Bootstrap based user interface for campaign management.
                     [id: "documents", index: 500, permission: "crmCampaign:show", label: "crmCampaign.tab.documents.label", template: '/crmContent/embedded', plugin: "crm-content-ui", model: {
                         def result = crmContentService.findResourcesByReference(crmCampaign)
                         return [bean     : crmCampaign, list: result, totalCount: result.size(),
-                                multiple: uploadMultipleFiles, status: 'shared',
+                                multiple: uploadMultipleFiles, defaultStatus: status,
                                 reference: crmCoreService.getReferenceIdentifier(crmCampaign), openAction: 'open']
                     }]
             )
