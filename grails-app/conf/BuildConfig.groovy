@@ -22,7 +22,7 @@ grails.project.dependency.resolution = {
         mavenCentral()
     }
     dependencies {
-        compile "org.ccil.cowan.tagsoup:tagsoup:1.2.1"
+        //compile "org.ccil.cowan.tagsoup:tagsoup:1.2.1"
         // See https://jira.grails.org/browse/GPHIB-30
         test("javax.validation:validation-api:1.1.0.Final") { export = false }
         test("org.hibernate:hibernate-validator:5.0.3.Final") { export = false }
@@ -38,18 +38,16 @@ grails.project.dependency.resolution = {
             export = false
         }
 
-        test(":codenarc:0.24.1") { export = false }
+        test(":codenarc:0.25.2") { export = false }
         test(":code-coverage:2.0.3-3") { export = false }
         test(":greenmail:1.3.4") { export = false }
 
         compile ":decorator:1.1"
         compile ":ckeditor:4.5.4.0"
 
-        compile ":crm-core:2.4.2"
-        compile ":crm-campaign:2.4.5-SNAPSHOT"
-        compile ":crm-content-ui:2.4.1"
-        compile ":crm-tags:2.4.1"
-        compile ":crm-ui-bootstrap:2.4.1"
+        compile ":crm-campaign:2.4.5"
+        compile ":crm-content-ui:2.4.2"
+        compile ":crm-ui-bootstrap:2.4.2"
 
         compile ":selection:0.9.8"
         runtime ":selection-repository:0.9.3"
