@@ -92,7 +92,6 @@ class CrmCampaignController {
     def create() {
         def tenant = TenantUtils.tenant
         def campaignTypes = crmCampaignService.getEnabledCampaignHandlers()
-        def crmCampaign = new CrmCampaign()
         def user = crmSecurityService.getCurrentUser()
         def userList = crmSecurityService.getTenantUsers()
         def timeList = (0..23).inject([]) { list, h ->
@@ -101,8 +100,9 @@ class CrmCampaignController {
             }; list
         }
         timeList << '23:59' // So a campaign can end at midnight.
-
         def parentList = CrmCampaign.findAllByTenantId(tenant)
+
+        def crmCampaign = new CrmCampaign(username: user.username)
         bindData(crmCampaign, params, [include: CrmCampaign.BIND_WHITELIST, exclude: ['startTime', 'endTime']])
         crmCampaign.handlerName = params.handlerName
 
