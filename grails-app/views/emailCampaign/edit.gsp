@@ -143,7 +143,7 @@
     <div class="row-fluid">
         <div class="span4">
             <div class="control-group">
-                <label class="control-label">Rubrik</label>
+                <label class="control-label"><g:message code="emailCampaign.subject.label"/></label>
 
                 <div class="controls">
                     <g:textField name="subject" value="${cfg.subject ?: crmCampaign.name}" class="span11"/>
@@ -155,7 +155,7 @@
         <div class="span4">
 
             <div class="control-group">
-                <label class="control-label">Avsändarens namn</label>
+                <label class="control-label"><g:message code="emailCampaign.senderName.label"/></label>
 
                 <div class="controls">
                     <g:textField name="senderName" value="${cfg.senderName}" class="span11"/>
@@ -167,7 +167,7 @@
         <div class="span4">
 
             <div class="control-group">
-                <label class="control-label">Avsändarens e-postadress</label>
+                <label class="control-label"><g:message code="emailCampaign.sender.label"/></label>
 
                 <div class="controls">
                     <g:textField name="sender" value="${cfg.sender}" class="span11"/>
@@ -201,9 +201,9 @@
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a href="#" class="crm-rename" data-crm-id="${p.id}">Redigera</a></li>
-                    <li><a href="#" class="crm-delete" data-crm-id="${p.id}">Ta bort del</a></li>
-                    <li><a href="#" class="crm-add">Lägg till del</a></li>
+                    <li><a href="#" class="crm-rename" data-crm-id="${p.id}"><g:message code="emailCampaign.editPart.label"/></a></li>
+                    <li><a href="#" class="crm-delete" data-crm-id="${p.id}"><g:message code="emailCampaign.removePart.label"/></a></li>
+                    <li><a href="#" class="crm-add"><g:message code="emailCampaign.addPart.label"/></a></li>
                 </ul>
             </div>
         </g:each>
@@ -221,13 +221,13 @@
         <div class="modal-header">
             <a class="close" data-dismiss="modal" aria-hidden="true">×</a>
 
-            <h3 id="myModalLabel">Lägg till del</h3>
+            <h3 id="myModalLabel"><g:message code="emailCampaign.addPart.title"/></h3>
         </div>
 
         <div class="modal-body">
             <div class="row-fluid">
                 <div class="control-group">
-                    <label class="control-label">Namn</label>
+                    <label class="control-label"><g:message code="emailCampaign.partName.label"/></label>
 
                     <div class="controls">
                         <g:textField name="name" value="" class="span6"/>
@@ -235,7 +235,7 @@
                 </div>
                 <g:if test="${metadata.templates}">
                     <div class="control-group">
-                        <label class="control-label">Mall</label>
+                        <label class="control-label"><g:message code="emailCampaign.template.label"/></label>
 
                         <div class="controls">
                             <g:select name="template" from="${metadata.templates}" optionKey="id" optionValue="title" class="span6"/>
@@ -248,11 +248,11 @@
         <div class="modal-footer">
             <button type="submit" class="btn btn-success">
                 <i class="icon-ok icon-white"></i>
-                Spara
+                <g:message code="emailCampaign.button.save.label"/>
             </button>
             <a href="#" class="btn" data-dismiss="modal">
                 <i class="icon-remove"></i>
-                <g:message code="crmEmailCampaign.button.close.label" default="Close"/>
+                <g:message code="emailCampaign.button.close.label" default="Close"/>
             </a>
         </div>
     </g:form>
@@ -275,11 +275,11 @@
     <div class="modal-footer">
         <g:link mapping="crm-newsletter-anonymous" id="${crmCampaign.publicId}" target="_blank"
         style="margin-right: 15px; font-size: smaller;">
-            Öppna på ny sida
+            <g:message code="emailCampaign.button.browser.label"/>
         </g:link>
         <a href="#" class="btn" data-dismiss="modal">
             <i class="icon-ok"></i>
-            <g:message code="crmEmailCampaign.button.close.label" default="Close"/>
+            <g:message code="emailCampaign.button.close.label" default="Close"/>
         </a>
     </div>
 </div>

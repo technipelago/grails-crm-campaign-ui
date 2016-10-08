@@ -116,7 +116,7 @@ class EmailCampaignController {
                 } else if (next) {
                     redirect action: 'edit', params: [id: crmCampaign.id, part: next]
                 } else {
-                    flash.success = message(code: 'crmEmailCampaign.updated.message', args: [message(code: 'crmCampaign.label', default: 'Campaign'), crmCampaign.toString()])
+                    flash.success = message(code: 'emailCampaign.updated.message', args: [message(code: 'crmCampaign.label', default: 'Campaign'), crmCampaign.toString()])
                     redirect controller: 'crmCampaign', action: "show", id: id
                 }
             } else {
