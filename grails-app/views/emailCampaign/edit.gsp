@@ -273,6 +273,10 @@
     </div>
 
     <div class="modal-footer">
+        <g:link mapping="crm-newsletter-anonymous" id="${crmCampaign.publicId}" target="_blank"
+        style="margin-right: 15px; font-size: smaller;">
+            Öppna på ny sida
+        </g:link>
         <a href="#" class="btn" data-dismiss="modal">
             <i class="icon-ok"></i>
             <g:message code="crmEmailCampaign.button.close.label" default="Close"/>
