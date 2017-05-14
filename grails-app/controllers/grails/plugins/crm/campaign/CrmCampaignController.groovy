@@ -65,7 +65,7 @@ class CrmCampaignController {
     }
 
     private List getActiveCampaigns(int max = 10) {
-        def now = new Date().clearTime()
+        def now = new Date()
         CrmCampaign.createCriteria().list([max: max, sort: 'lastUpdated', order: 'desc']) {
             eq('tenantId', TenantUtils.tenant)
             or {
