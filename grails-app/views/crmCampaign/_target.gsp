@@ -49,12 +49,14 @@
     <g:form controller="crmCampaignTarget" action="execute">
         <g:hiddenField name="id" value="${bean.id}"/>
 
-        <g:link controller="crmCampaignTarget" action="count" id="${bean.id}"
-                elementId="countRecipients" class="btn btn-info"
-                title="${message(code: 'crmCampaign.button.target.count.help')}">
-            <i class="icon-eye-open icon-white"></i>
-            <g:message code="crmCampaign.button.target.count.label"/>
-        </g:link>
+        <crm:hasPermission permission="crmCampaign:edit">
+            <g:link controller="crmCampaignTarget" action="count" id="${bean.id}"
+                    elementId="countRecipients" class="btn btn-info"
+                    title="${message(code: 'crmCampaign.button.target.count.help')}">
+                <i class="icon-eye-open icon-white"></i>
+                <g:message code="crmCampaign.button.target.count.label"/>
+            </g:link>
+        </crm:hasPermission>
 
         <g:if test="${list}">
             <crm:button visual="warning" icon="icon-play icon-white"

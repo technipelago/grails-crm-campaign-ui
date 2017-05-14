@@ -181,11 +181,13 @@
 
         <div class="form-actions">
 
-            <a href="#add-recipient-modal" class="btn btn-success" data-toggle="modal">
+            <crm:hasPermission permission="crmCampaign:edit">
+                <a href="#add-recipient-modal" class="btn btn-success" data-toggle="modal">
 
-                <i class="icon-plus icon-white"></i>
-                <g:message code="crmCampaignRecipient.button.add.label" default="Add"/>
-            </a>
+                    <i class="icon-plus icon-white"></i>
+                    <g:message code="crmCampaignRecipient.button.add.label" default="Add"/>
+                </a>
+            </crm:hasPermission>
 
             <crm:button label="crmCampaignRecipient.button.delete.label"
                         title="crmCampaignRecipient.button.delete.help"
