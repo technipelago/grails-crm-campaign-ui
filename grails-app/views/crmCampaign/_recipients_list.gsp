@@ -3,7 +3,10 @@
     <tr class="crm-recipient ${r.dateOptOut ? 'crm-optout' : (r.reason ? 'crm-error' : (r.dateOpened ? 'crm-opened' : ''))}"
         data-crm-total="${totalCount}" data-crm-offset="${params.offset ?: 0}" data-crm-max="${params.max ?: 25}">
 
-        <td><g:link action="showRecipient" id="${r.id}" class="crm-info">${r}</g:link></td>
+        <td>
+            <g:link action="showRecipient" id="${r.id}" class="crm-info">${r}</g:link>
+            <g:if test="${r.ref}"><i class="icon-hand-right"></i></g:if>
+        </td>
         <td class="nowrap"><g:formatDate type="datetime" style="short" date="${r.dateSent}"/></td>
         <td class="nowrap"><g:formatDate type="datetime" style="short" date="${r.dateOpened}"/></td>
         <td style="color: #990000;">
