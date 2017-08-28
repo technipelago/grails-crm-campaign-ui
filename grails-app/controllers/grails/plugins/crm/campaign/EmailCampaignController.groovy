@@ -86,15 +86,17 @@ class EmailCampaignController {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND)
                 return
             }
-            if (crmResourceRef.reference.id != crmCampaign.id) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST)
-                return
-            }
         } else {
             crmResourceRef = crmEmailCampaignService.getPart(crmCampaign, DEFAULT_PART)
             if (!crmResourceRef) {
-                crmResourceRef = crmEmailCampaignService.setPart(crmCampaign, DEFAULT_PART, '<p>&nbsp;</p>')
+                redirect action: 'create', id: id
+                return
             }
+        }
+
+        if (crmResourceRef.reference.id != crmCampaign.id) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST)
+            return
         }
 
         params._part = FilenameUtils.getBaseName(crmResourceRef.name)
@@ -131,18 +133,18 @@ class EmailCampaignController {
         } else {
             def user = crmSecurityService.currentUser
             def cfg = crmCampaign.configuration
-            if(cfg.parts) {
+            if (cfg.parts) {
                 cfg = emailCampaign.migrate(crmCampaign)
                 crmCampaign.save()
             }
             if (!cfg.subject) {
-                cfg.subject = crmCampaign.toString()
+                cfg.subject = grailsApplication.config.crm.campaign.email.subject ?: crmCampaign.toString()
             }
             if (!cfg.sender) {
-                cfg.sender = user.email
+                cfg.sender = grailsApplication.config.crm.campaign.email.sender.email ?: user.email
             }
             if (!cfg.senderName) {
-                cfg.senderName = user.name
+                cfg.senderName = grailsApplication.config.crm.campaign.email.sender.name ?: user.name
             }
             def metadata = [:]
             metadata.parts = getParts(crmCampaign)
@@ -152,6 +154,42 @@ class EmailCampaignController {
                     url        : getNewsletterUrl(crmCampaign), metadata: metadata,
                     part       : crmResourceRef, content: crmResourceRef.text]
         }
+    }
+
+    @Transactional
+    def create(Long id, Long template) {
+        def crmCampaign = CrmCampaign.get(id)
+        if (!crmCampaign) {
+            flash.error = message(code: 'crmCampaign.not.found.message', args: [message(code: 'crmCampaign.label', default: 'Campaign'), id])
+            redirect(controller: "crmCampaign", action: "index")
+            return
+        }
+        def crmResourceRef
+        if (template) {
+            def templateInstance = crmContentService.getResourceRef(template)
+            if (!templateInstance) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND)
+                return
+            }
+            crmResourceRef = crmEmailCampaignService.getPart(crmCampaign, DEFAULT_PART)
+            if (!crmResourceRef) {
+                crmResourceRef = crmEmailCampaignService.setPart(crmCampaign, DEFAULT_PART, '<p>&nbsp;</p>')
+            }
+            templateInstance.withInputStream { inputStream ->
+                crmContentService.updateResource(crmResourceRef, inputStream, templateInstance.metadata.contentType)
+            }
+            // Fall through
+        } else {
+            def templates = getTemplates(crmCampaign)
+            if (templates) {
+                return [crmCampaign: crmCampaign, templates: templates]
+            }
+            crmResourceRef = crmEmailCampaignService.getPart(crmCampaign, DEFAULT_PART)
+            if (!crmResourceRef) {
+                crmResourceRef = crmEmailCampaignService.setPart(crmCampaign, DEFAULT_PART, '<p>&nbsp;</p>')
+            }
+        }
+        redirect action: 'edit', params: [id: id, part: crmResourceRef.id]
     }
 
     private Map getPreviewModel(CrmCampaign campaign) {

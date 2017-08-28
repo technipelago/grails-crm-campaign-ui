@@ -186,18 +186,30 @@
     <div class="form-actions">
         <crm:button action="edit" visual="warning" icon="icon-ok icon-white" label="crmCampaign.button.save.label"/>
 
-        <a href="#" class="btn btn-info crm-preview">
-            <i class="icon-eye-open icon-white"></i>
-            <g:message code="emailCampaign.button.preview.label"/>
-        </a>
+        <div class="btn-group">
+            <a href="#" class="btn btn-info crm-preview">
+                <i class="icon-eye-open icon-white"></i>
+                <g:message code="emailCampaign.button.preview.label"/>
+            </a>
+            <button class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li>
+                    <g:link mapping="crm-newsletter-anonymous" id="${crmCampaign.publicId}" target="_blank">
+                        <g:message code="emailCampaign.button.browser.label"/>
+                    </g:link>
+                </li>
+            </ul>
+        </div>
 
         <g:each in="${metadata.parts}" var="p">
             <div class="btn-group">
-                <button type="submit" data-crm-id="${p.id}" class="btn btn-${p.id == part.id ? 'success' : 'info'} crm-part">
-                    <i class="icon-th-large icon-white"></i>
+                <button type="submit" data-crm-id="${p.id}" class="btn ${p.id == part.id ? 'btn-success' : ''} crm-part">
+                    <i class="icon-th-large ${p.id == part.id ? 'icon-white' : ''}"></i>
                     ${FilenameUtils.getBaseName(p.name)}
                 </button>
-                <button class="btn btn-${p.id == part.id ? 'success' : 'info'} dropdown-toggle" data-toggle="dropdown">
+                <button class="btn ${p.id == part.id ? 'btn-success' : ''} dropdown-toggle" data-toggle="dropdown">
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu">
