@@ -36,6 +36,7 @@ This plugin provide  a Twitter Bootstrap based user interface for campaign manag
 
 == Changes
 
+2.4.5:: It's now possible to start from a template when creating a new email campaign
 2.4.4:: Redesigned layout for target group and recipients to better handle large target groups.
 2.4.3:: Better support for supplying custom model to email templates
 2.4.2:: Fixed a bug that caused the link between recipient and contact to be lost
