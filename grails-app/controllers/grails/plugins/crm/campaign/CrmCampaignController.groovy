@@ -263,8 +263,9 @@ class CrmCampaignController {
             response.sendError(HttpServletResponse.SC_NOT_FOUND)
             return
         }
+        def username = crmSecurityService.currentUser.username
         def result = event(for: 'crmCampaign', topic: 'addRecipient',
-                data: [tenant: tenant, campaign: id, name: instance.name, email: instance.email, telephone: instance.telephone ?: instance.mobile])
+                data: [tenant: tenant, campaign: id, name: instance.name, email: instance.email, telephone: instance.telephone ?: instance.mobile, user: username])
                 .waitFor(10000)?.value
         if (!result) {
             result = [name: instance.name, email: instance.email, telephone: instance.telephone ?: instance.mobile]
@@ -287,8 +288,9 @@ class CrmCampaignController {
         }
         if (request.post) {
             if (email) {
+                def username = crmSecurityService.currentUser.username
                 def result = event(for: 'crmCampaign', topic: 'addRecipient',
-                        data: [tenant: tenant, campaign: id, name: name, email: email, telephone: telephone])
+                        data: [tenant: tenant, campaign: id, name: name, email: email, telephone: telephone, user: username])
                         .waitFor(10000)?.value
                 if (!result) {
                     result = [name: name, email: email, telephone: telephone]
