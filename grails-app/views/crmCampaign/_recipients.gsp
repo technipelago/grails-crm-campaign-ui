@@ -193,8 +193,22 @@
                         title="crmCampaignRecipient.button.delete.help"
                         icon="icon-trash icon-white"
                         visual="danger"
+                        group="true"
                         confirm="crmCampaignRecipient.button.delete.confirm.message"
-                        permission="crmCampaign:edit"/>
+                        permission="crmCampaign:edit">
+
+                <button class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li>
+                        <g:link action="deleteAllRecipients" id="${crmCampaign?.id}"
+                                onclick="return confirm('Är du säker på att du vill ta bort alla mottagare?')">
+                            <g:message code="crmCampaign.button.removeRecipients.label" default="Remove all recipients"/>
+                        </g:link>
+                    </li>
+                </ul>
+            </crm:button>
 
         </div>
     </g:form>

@@ -377,16 +377,24 @@ class CrmCampaignController {
             return
         }
 
-        List<Long> recipients = params.list('recipients').collect { Long.valueOf(it) }
-        def result = recipients ? CrmCampaignRecipient.createCriteria().list() {
-            eq('campaign', crmCampaign)
-            inList('id', recipients)
-        } : []
-        def tombstone = "${result.size()}"
+        Collection<Long> recipients = params.list('recipients').collect { Long.valueOf(it) }
+        def tombstone = (recipients ? crmCampaignService.deleteRecipients(crmCampaign, recipients) : 0).toString()
 
-        for (r in result) {
-            r.delete()
+        flash.warning = message(code: 'crmCampaignRecipient.deleted.message', args: [message(code: 'crmCampaignRecipient.label', default: 'Recipient'), tombstone])
+        redirect action: "show", id: id, fragment: 'recipients'
+    }
+
+    @Transactional
+    def deleteAllRecipients(Long id) {
+        def tenant = TenantUtils.tenant
+        def crmCampaign = CrmCampaign.findByIdAndTenantId(id, tenant)
+        if (!crmCampaign) {
+            flash.error = message(code: 'crmCampaign.not.found.message', args: [message(code: 'crmCampaign.label', default: 'Campaign'), id])
+            redirect(action: "index")
+            return
         }
+
+        def tombstone = crmCampaignService.deleteRecipients(crmCampaign, null).toString()
 
         flash.warning = message(code: 'crmCampaignRecipient.deleted.message', args: [message(code: 'crmCampaignRecipient.label', default: 'Recipient'), tombstone])
         redirect action: "show", id: id, fragment: 'recipients'
