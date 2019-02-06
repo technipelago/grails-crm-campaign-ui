@@ -15,7 +15,6 @@ class CrmCampaignTargetController {
     def crmSecurityService
     def crmCampaignTargetService
     def crmCampaignService
-    def selectionRepositoryService
 
     @Transactional
     def add(Long id, Long selection, Integer orderIndex, int operation) {
@@ -26,8 +25,7 @@ class CrmCampaignTargetController {
             redirect(controller: "crmCampaign", action: "index")
             return
         }
-        def username = crmSecurityService.currentUser.username
-        def selectionData = selectionRepositoryService.list('crmContact', username, crmCampaign.tenantId).find { it.id == selection }
+        def selectionData = crmCampaignService.getSelections(crmCampaign).find { it.id == selection }
         if (selectionData) {
             if (!orderIndex) {
                 orderIndex = (crmCampaign.target?.max { it.orderIndex }?.orderIndex ?: 0) + 1

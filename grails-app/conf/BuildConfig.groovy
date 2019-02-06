@@ -45,7 +45,7 @@ grails.project.dependency.resolution = {
         compile ":decorator:1.1"
         compile ":ckeditor:4.5.4.0"
 
-        compile ":crm-campaign:2.4.6"
+        compile ":crm-campaign:2.4.7-SNAPSHOT"
         compile ":crm-content-ui:2.4.5"
         compile ":crm-ui-bootstrap:2.4.3"
 

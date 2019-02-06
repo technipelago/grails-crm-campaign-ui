@@ -16,7 +16,6 @@ class CrmCampaignController {
     def crmCoreService
     def crmSecurityService
     def selectionService
-    def selectionRepositoryService
     def crmCampaignService
 
     def index() {
@@ -227,9 +226,8 @@ class CrmCampaignController {
             return
         }
 
-        def username = crmSecurityService.currentUser.username
         def count = CrmCampaignRecipient.countByCampaign(crmCampaign)
-        def selections = selectionRepositoryService.list('crmContact', username, crmCampaign.tenantId)
+        def selections = crmCampaignService.getSelections(crmCampaign)
         [crmCampaign: crmCampaign, recipientsCount: count, availableSelections: selections]
     }
 
