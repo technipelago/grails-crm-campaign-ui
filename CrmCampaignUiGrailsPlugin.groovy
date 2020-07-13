@@ -1,6 +1,6 @@
 class CrmCampaignUiGrailsPlugin {
     def groupId = ""
-    def version = "2.4.6"
+    def version = "2.4.7"
     def grailsVersion = "2.4 > *"
     def dependsOn = [:]
     def loadAfter = ['crmCampaign']

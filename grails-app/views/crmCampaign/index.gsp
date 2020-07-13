@@ -43,10 +43,9 @@
                                 </label>
 
                                 <div class="controls">
-                                    <div class="input-append date"
-                                         data-date="${formatDate(format: 'yyyy-MM-dd', date: cmd.fromDate ?: new Date())}">
+                                    <div class="input-append date">
                                         <g:textField name="fromDate" class="span11" placeholder="ÅÅÅÅ-MM-DD"
-                                                     value="${formatDate(format: 'yyyy-MM-dd', date: cmd.fromDate)}"/><span
+                                                     value="${cmd.fromDate}"/><span
                                             class="add-on"><i class="icon-th"></i></span>
                                     </div>
                                 </div>
@@ -58,10 +57,9 @@
                                 </label>
 
                                 <div class="controls">
-                                    <div class="input-append date"
-                                         data-date="${formatDate(format: 'yyyy-MM-dd', date: cmd.toDate ?: new Date())}">
+                                    <div class="input-append date">
                                         <g:textField name="toDate" class="span11" placeholder="ÅÅÅÅ-MM-DD"
-                                                     value="${formatDate(format: 'yyyy-MM-dd', date: cmd.toDate)}"/><span
+                                                     value="${cmd.toDate}"/><span
                                             class="add-on"><i class="icon-th"></i></span>
                                     </div>
                                 </div>
