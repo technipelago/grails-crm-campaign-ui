@@ -42,14 +42,14 @@ grails.project.dependency.resolution = {
         test(":code-coverage:2.0.3-3") { export = false }
         test(":greenmail:1.3.4") { export = false }
 
-        compile ":decorator:1.1"
+        compile ":decorator:1.1.1"
         compile ":ckeditor:4.5.4.0"
 
         compile ":crm-campaign:2.4.7"
         compile ":crm-content-ui:2.5.0"
         compile ":crm-ui-bootstrap:2.4.4"
 
-        compile ":selection:0.9.8"
+        compile ":selection:0.9.9"
         runtime ":selection-repository:0.9.3"
     }
 }
